@@ -8,7 +8,6 @@ export default registerAs('config', () => ({
     maxHitsAllowed: parseInt(process.env.MAX_HITS_ALLOWED) || 1,
     maxHitsTimeRange: parseInt(process.env.MAX_HITS_TIME_RANGE) || 60,
   },
-  /*
   database: {
     client: process.env.DATABASE_CLIENT,
     host: process.env.DATABASE_HOST,
@@ -24,6 +23,7 @@ export default registerAs('config', () => ({
     password: process.env.BASIC_ACL_ADMIN_PASSWORD,
     projectCode: process.env.BASIC_ACL_PROJECT_CODE,
   },
+  /*
   cloudinary: {
     cloudName: process.env.CLOUDINARY_CLOUD_NAME,
     apiKey: process.env.CLOUDINARY_API_KEY,

@@ -11,6 +11,9 @@ import appConfigSchema from './config/app.config.schema';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AppResolver } from './app.resolver';
+import { UsersModule } from './modules/users/users.module';
+import { BasicAclModule } from './common/plugins/basic-acl/basic-acl.module';
+import { CommonModule } from './common/common.module';
 
 const NODE_ENV = process.env.NODE_ENV || 'local';
 const envPath = path.resolve(__dirname, `../.env.${NODE_ENV}`);
@@ -43,6 +46,12 @@ const envPath = path.resolve(__dirname, `../.env.${NODE_ENV}`);
         logging: true,
       }),
     }),
+
+    UsersModule,
+
+    BasicAclModule,
+
+    CommonModule,
   ],
   controllers: [AppController],
   providers: [AppService, AppResolver],
