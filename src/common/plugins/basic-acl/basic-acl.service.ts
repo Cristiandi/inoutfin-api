@@ -4,6 +4,8 @@ import { ConfigType } from '@nestjs/config';
 import appConfig from '../../../config/app.config';
 
 import { CreateUserInput } from './dto/create-user-input.dto';
+import { GetUserByAuthUidInput } from './dto/get-user-by-auth-uid-input.dto';
+import { SendForgottenPasswordEmailInput } from './dto/send-forgotten-password-email-input.dto';
 
 @Injectable()
 export class BasicAclService {
@@ -76,6 +78,72 @@ export class BasicAclService {
           phone,
           roleCode,
           anonymous,
+        },
+      });
+      const { data } = response;
+
+      return data;
+    } catch (error) {
+      throw new HttpException(
+        error.response.data.statusCode,
+        error.response.data.message,
+      );
+    }
+  }
+
+  /**
+   * function to send the forgotten password email
+   *
+   * @param {SendForgottenPasswordEmailInput} sendForgottenPasswordEmailInput
+   * @return {*}
+   * @memberof BasicAclService
+   */
+  async sendForgottenPasswordEmail(
+    sendForgottenPasswordEmailInput: SendForgottenPasswordEmailInput,
+  ) {
+    try {
+      const {
+        acl: { baseUrl, companyUuid },
+      } = this.appConfiguration;
+
+      const { email } = sendForgottenPasswordEmailInput;
+
+      const response = await this.httpService.axiosRef({
+        url: `${baseUrl}users/forgotten-password`,
+        method: 'post',
+        data: {
+          companyUuid,
+          email,
+        },
+      });
+
+      const { data } = response;
+
+      return data;
+    } catch (error) {
+      throw new HttpException(
+        error.response.data.statusCode,
+        error.response.data.message,
+      );
+    }
+  }
+
+  async getUserByAuthUid(getUserByAuthUidInpput: GetUserByAuthUidInput) {
+    try {
+      const {
+        acl: { baseUrl, companyUuid },
+      } = this.appConfiguration;
+
+      const { authUid } = getUserByAuthUidInpput;
+
+      const token = await this.getToken();
+
+      const response = await this.httpService.axiosRef({
+        url: `${baseUrl}users/user/${authUid}`,
+        method: 'get',
+        headers: {
+          'company-uuid': companyUuid,
+          Authorization: `Bearer ${token}`,
         },
       });
       const { data } = response;

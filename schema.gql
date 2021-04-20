@@ -28,6 +28,8 @@ input GetUserByAuthUidInput {
 
 type Mutation {
   createUser(createUserInput: CreateUserInput!): User!
+  updateUser(updateUserInput: UpdateUserInput!): User!
+  resetUserPassword(resetUserPasswordInput: ResetUserPasswordInput!): String!
 }
 
 input CreateUserInput {
@@ -35,4 +37,13 @@ input CreateUserInput {
   email: String!
   phone: String!
   password: String!
+}
+
+input UpdateUserInput {
+  authUid: String!
+  fullName: String!
+}
+
+input ResetUserPasswordInput {
+  email: String!
 }

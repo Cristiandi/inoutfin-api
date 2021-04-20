@@ -7,6 +7,8 @@ import { UsersService } from './users.service';
 
 import { CreateUserInput } from './dto/create-user-input';
 import { GetUserByAuthUidInput } from './dto/get-uset-by-auth-uid-input.dto';
+import { ResetUserPasswordInput } from './dto/reset-user-password-input.dto';
+import { UpdateUserInput } from './dto/update-user-input.dto';
 
 @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
 @Resolver(() => User)
@@ -20,10 +22,25 @@ export class UsersResolver {
     return this.service.create(createUserInput);
   }
 
+  @Mutation(() => User, { name: 'updateUser' })
+  updateUser(
+    @Args('updateUserInput') updateUserInput: UpdateUserInput,
+  ): Promise<User> {
+    return this.service.update(updateUserInput);
+  }
+
   @Query(() => User, { name: 'getUserByAuthUid' })
   getUserByAuthUid(
     @Args('getUserByAuthUidInput') getUserByAuthUidInput: GetUserByAuthUidInput,
-  ) {
+  ): Promise<User> {
     return this.service.getByAuthuid(getUserByAuthUidInput);
+  }
+
+  @Mutation(() => String, { name: 'resetUserPassword' })
+  resetUserPassword(
+    @Args('resetUserPasswordInput')
+    resetUserPasswordInput: ResetUserPasswordInput,
+  ): Promise<string> {
+    return this.service.resetPassword(resetUserPasswordInput);
   }
 }

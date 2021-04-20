@@ -17,6 +17,8 @@ import { BasicAclService } from '../../common/plugins/basic-acl/basic-acl.servic
 import { CreateUserInput } from './dto/create-user-input';
 import { GetUserByOneFieldInput } from './dto/get-user-by-one-field-input.dto';
 import { GetUserByAuthUidInput } from './dto/get-uset-by-auth-uid-input.dto';
+import { ResetUserPasswordInput } from './dto/reset-user-password-input.dto';
+import { UpdateUserInput } from './dto/update-user-input.dto';
 
 @Injectable()
 export class UsersService {
@@ -82,6 +84,25 @@ export class UsersService {
     }
   }
 
+  public async update(updateUserInput: UpdateUserInput): Promise<User> {
+    const { authUid } = updateUserInput;
+
+    const existing = await this.getByAuthuid({
+      authUid,
+    });
+
+    const { fullName } = updateUserInput;
+
+    const preloaded = await this.repository.preload({
+      id: existing.id,
+      fullName,
+    });
+
+    const saved = await this.repository.save(preloaded);
+
+    return saved;
+  }
+
   public async getByOneField(
     getUserByOneFieldInput: GetUserByOneFieldInput,
   ): Promise<User | null> {
@@ -109,5 +130,17 @@ export class UsersService {
     });
 
     return existing;
+  }
+
+  public async resetPassword(
+    resetUserPasswordInput: ResetUserPasswordInput,
+  ): Promise<string> {
+    const { email } = resetUserPasswordInput;
+
+    await this.basicAclService.sendForgottenPasswordEmail({
+      email,
+    });
+
+    return 'ok';
   }
 }
