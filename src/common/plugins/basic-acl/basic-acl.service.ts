@@ -3,6 +3,7 @@ import { ConfigType } from '@nestjs/config';
 
 import appConfig from '../../../config/app.config';
 import { ChangeEmailInput } from './dto/change-email-input.dto';
+import { ChangePasswordInput } from './dto/change-password-input.dto';
 
 import { CreateUserInput } from './dto/create-user-input.dto';
 import { GetUserByAuthUidInput } from './dto/get-user-by-auth-uid-input.dto';
@@ -193,6 +194,49 @@ export class BasicAclService {
           companyUuid,
           email,
           phone,
+        },
+      });
+
+      const { data } = response;
+
+      return data;
+    } catch (error) {
+      throw new HttpException(
+        error.response.data.statusCode,
+        error.response.data.message,
+      );
+    }
+  }
+
+  /**
+   * function to change the password
+   *
+   * @param {ChangePasswordInput} changePasswordInput
+   * @return {*}
+   * @memberof BasicAclService
+   */
+  async changePassword(changePasswordInput: ChangePasswordInput) {
+    try {
+      const { email, oldPassword, newPassword } = changePasswordInput;
+
+      const token = await this.getToken();
+
+      const {
+        acl: { baseUrl, companyUuid },
+      } = this.appConfiguration;
+
+      const response = await this.httpService.axiosRef({
+        url: `${baseUrl}users/change-password`,
+        method: 'patch',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'company-uuid': companyUuid,
+        },
+        data: {
+          companyUuid,
+          email,
+          oldPassword,
+          newPassword,
         },
       });
 

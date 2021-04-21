@@ -20,6 +20,7 @@ import { GetUserByAuthUidInput } from './dto/get-uset-by-auth-uid-input.dto';
 import { ResetUserPasswordInput } from './dto/reset-user-password-input.dto';
 import { UpdateUserInput } from './dto/update-user-input.dto';
 import { ChangeUserEmailInput } from './dto/change-user-email-input.dto';
+import { ChangeUserPasswordInput } from './dto/change-user-password-input.dto';
 
 @Injectable()
 export class UsersService {
@@ -128,6 +129,26 @@ export class UsersService {
     const saved = await this.repository.save(preloaded);
 
     return saved;
+  }
+
+  public async changePassword(
+    changeUserPasswordInput: ChangeUserPasswordInput,
+  ): Promise<User> {
+    const { authUid } = changeUserPasswordInput;
+
+    const existing = await this.getByAuthuid({
+      authUid,
+    });
+
+    const { oldPassword, newPassword } = changeUserPasswordInput;
+
+    await this.basicAclService.changePassword({
+      email: existing.email,
+      oldPassword,
+      newPassword,
+    });
+
+    return existing;
   }
 
   public async getByOneField(
