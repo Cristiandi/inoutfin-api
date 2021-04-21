@@ -4,6 +4,7 @@ import { ConfigType } from '@nestjs/config';
 import appConfig from '../../../config/app.config';
 import { ChangeEmailInput } from './dto/change-email-input.dto';
 import { ChangePasswordInput } from './dto/change-password-input.dto';
+import { ChangePhoneInput } from './dto/change-phone-input.dto';
 
 import { CreateUserInput } from './dto/create-user-input.dto';
 import { GetUserByAuthUidInput } from './dto/get-user-by-auth-uid-input.dto';
@@ -237,6 +238,48 @@ export class BasicAclService {
           email,
           oldPassword,
           newPassword,
+        },
+      });
+
+      const { data } = response;
+
+      return data;
+    } catch (error) {
+      throw new HttpException(
+        error.response.data.statusCode,
+        error.response.data.message,
+      );
+    }
+  }
+
+  /**
+   * function to change the phone
+   *
+   * @param {ChangePhoneInput} changePhoneInput
+   * @return {*}
+   * @memberof BasicAclService
+   */
+  public async changePhone(changePhoneInput: ChangePhoneInput) {
+    try {
+      const {
+        acl: { baseUrl, companyUuid },
+      } = this.appConfiguration;
+
+      const { email, phone } = changePhoneInput;
+
+      const token = await this.getToken();
+
+      const response = await this.httpService.axiosRef({
+        url: `${baseUrl}users/change-phone`,
+        method: 'patch',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'company-uuid': companyUuid,
+        },
+        data: {
+          companyUuid,
+          email,
+          phone,
         },
       });
 

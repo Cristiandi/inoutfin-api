@@ -5,16 +5,15 @@ import {
   Entity,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-
-@Entity('users')
 @ObjectType()
+@Entity('users')
 export class User {
   @Field()
   @PrimaryGeneratedColumn()
   id: number;
 
   @Field()
-  @Column({ type: 'varchar', length: 50 })
+  @Column({ name: 'auth_uid', type: 'varchar', length: 50 })
   authUid: string;
 
   @Field()
