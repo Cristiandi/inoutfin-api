@@ -4,6 +4,7 @@ import {
   Parent,
   ResolveField,
   Resolver,
+  Query,
 } from '@nestjs/graphql';
 
 import { Movement } from './movement.entity';
@@ -11,12 +12,14 @@ import { User } from '../users/user.entity';
 import { MovementType } from '../movement-types/movement-type.entity';
 import { MovementCategory } from '../movement-categories/movement-category.entity';
 
+import { Balance } from './balance.model';
+
 import { MovementsService } from './movements.service';
 import { MovementsLoaders } from './movements.loaders';
 
 import { CreateOutcomeMovementInput } from './dto/create-outcome-movement-input.dto';
 import { CreateIncomeMovementInput } from './dto/create-income-movement-input.dto';
-
+import { GetBalanceResumeInput } from './dto/get-balance-resume-input.dto';
 @Resolver(() => Movement)
 export class MovementsResolver {
   constructor(
@@ -38,6 +41,13 @@ export class MovementsResolver {
     createIncomeMovementInput: CreateIncomeMovementInput,
   ): Promise<Movement> {
     return this.service.createIncome(createIncomeMovementInput);
+  }
+
+  @Query(() => Balance, { name: 'getBalanceResume' })
+  getBalanceResume(
+    @Args('getBalanceResumeInput') getBalanceResumeInput: GetBalanceResumeInput,
+  ): Promise<Balance> {
+    return this.service.getBalanceResume(getBalanceResumeInput);
   }
 
   @ResolveField(() => User, { name: 'user' })

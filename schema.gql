@@ -47,10 +47,15 @@ type User {
   updatedAt: DateTime!
 }
 
+type Balance {
+  amount: Float
+}
+
 type Query {
   sayHello: String!
   getUserByAuthUid(getUserByAuthUidInput: GetUserByAuthUidInput!): User!
   getAllMovementCategories(getAllMovementCategoriesInput: GetAllMovementCategoriesInput!): [MovementCategory!]!
+  getBalanceResume(getBalanceResumeInput: GetBalanceResumeInput!): Balance!
 }
 
 input GetUserByAuthUidInput {
@@ -59,6 +64,10 @@ input GetUserByAuthUidInput {
 
 input GetAllMovementCategoriesInput {
   sign: Int!
+}
+
+input GetBalanceResumeInput {
+  userAuthUid: String!
 }
 
 type Mutation {

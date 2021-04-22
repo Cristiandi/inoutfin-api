@@ -11,6 +11,8 @@ import { MovementCategoriesService } from '../movement-categories/movement-categ
 
 import { CreateOutcomeMovementInput } from './dto/create-outcome-movement-input.dto';
 import { CreateIncomeMovementInput } from './dto/create-income-movement-input.dto';
+import { GetBalanceResumeInput } from './dto/get-balance-resume-input.dto';
+import { Balance } from './balance.model';
 
 @Injectable()
 export class MovementsService {
@@ -112,5 +114,29 @@ export class MovementsService {
     const saved = await this.repository.save(created);
 
     return saved;
+  }
+
+  public async getBalanceResume(
+    getBalanceResumeInput: GetBalanceResumeInput,
+  ): Promise<Balance> {
+    const { userAuthUid } = getBalanceResumeInput;
+
+    const user = await this.usersService.getByAuthuid({
+      authUid: userAuthUid,
+    });
+
+    const result = await this.repository
+      .createQueryBuilder('m')
+      .select(['sum(m.amount) as total'])
+      .where('m.user_id = :userId', { userId: user.id })
+      .execute();
+
+    const { total } = result[0];
+
+    console.log(parseFloat(total));
+
+    return {
+      amount: parseFloat(total),
+    };
   }
 }
