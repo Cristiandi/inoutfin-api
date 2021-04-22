@@ -15,6 +15,7 @@ import { UsersModule } from './modules/users/users.module';
 import { BasicAclModule } from './common/plugins/basic-acl/basic-acl.module';
 import { CommonModule } from './common/common.module';
 import { MovementTypesModule } from './modules/movement-types/movement-types.module';
+import { MovementCategoriesModule } from './modules/movement-categories/movement-categories.module';
 
 const NODE_ENV = process.env.NODE_ENV || 'local';
 const envPath = path.resolve(__dirname, `../.env.${NODE_ENV}`);
@@ -55,6 +56,8 @@ const envPath = path.resolve(__dirname, `../.env.${NODE_ENV}`);
     CommonModule,
 
     MovementTypesModule,
+
+    MovementCategoriesModule,
   ],
   controllers: [AppController],
   providers: [AppService, AppResolver],

@@ -4,6 +4,7 @@ import { Logger } from '@nestjs/common';
 import { AppModule } from '../app.module';
 
 import { SeedMovementTypesFactory } from './seed_movement_types';
+import { SeedMovementCategoriesFactory } from './seed_movement_categories';
 
 (async () => {
   // getting the nest js app
@@ -14,6 +15,12 @@ import { SeedMovementTypesFactory } from './seed_movement_types';
   await SeedMovementTypesFactory.seed(application);
 
   Logger.log('END --MOVEMENT TYPES--', 'index.ts');
+
+  Logger.log('INIT --MOVEMENT CATEGORIES--', 'index.ts');
+
+  await SeedMovementCategoriesFactory.seed(application);
+
+  Logger.log('END --MOVEMENT CATEGORIES--', 'index.ts');
 })()
   .catch((err) => console.error(err))
   .finally(() => process.exit(0));
