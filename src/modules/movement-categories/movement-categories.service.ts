@@ -12,6 +12,7 @@ import { CreateMovementCategoryInput } from './dto/create-movement-category-inpu
 import { GetMovementCategoryByOneFieldInput } from './dto/get-movement-category-by-one-field-input.dto';
 import { FindOneMovementCategoryInput } from './dto/find-one-movement-category-input.dto';
 import { UpdateMovementCategoryInput } from './dto/update-movement-category-input.dto';
+import { GetAllMovementCategoriesInput } from './dto/get-all-movement-categories-input.dto';
 
 @Injectable()
 export class MovementCategoriesService {
@@ -101,6 +102,22 @@ export class MovementCategoriesService {
     const saved = await this.repository.save(preload);
 
     return saved;
+  }
+
+  public async getAll(
+    getAllMovementCategoriesInput: GetAllMovementCategoriesInput,
+  ): Promise<MovementCategory[]> {
+    const { sign } = getAllMovementCategoriesInput;
+
+    const query = this.repository.createQueryBuilder('mc').loadAllRelationIds();
+
+    if (sign) {
+      query.where('mc.sign = :sign', { sign });
+    }
+
+    const items = query.getMany();
+
+    return items;
   }
 
   public async getByIds(ids: number[]): Promise<MovementCategory[]> {

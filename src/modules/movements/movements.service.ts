@@ -31,6 +31,7 @@ export class MovementsService {
       authUid: userAuthUid,
     });
 
+    // TODO: use a parameter instead
     const movementType = await this.movementTypesService.getByOneField({
       field: 'code',
       value: '02O',
@@ -77,6 +78,7 @@ export class MovementsService {
       authUid: userAuthUid,
     });
 
+    // TODO use a parameter instead
     const movementType = await this.movementTypesService.getByOneField({
       field: 'code',
       value: '01I',

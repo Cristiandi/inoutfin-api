@@ -50,10 +50,15 @@ type User {
 type Query {
   sayHello: String!
   getUserByAuthUid(getUserByAuthUidInput: GetUserByAuthUidInput!): User!
+  getAllMovementCategories(getAllMovementCategoriesInput: GetAllMovementCategoriesInput!): [MovementCategory!]!
 }
 
 input GetUserByAuthUidInput {
   authUid: String!
+}
+
+input GetAllMovementCategoriesInput {
+  sign: Int!
 }
 
 type Mutation {
