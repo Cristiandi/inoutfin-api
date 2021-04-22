@@ -3,8 +3,11 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+
+import { Movement } from '../movements/movement.entity';
 @ObjectType()
 @Entity('users')
 export class User {
@@ -37,4 +40,7 @@ export class User {
   updatedAt: Date;
 
   // relations
+
+  @OneToMany(() => Movement, (movement) => movement.user)
+  movements: Movement[];
 }

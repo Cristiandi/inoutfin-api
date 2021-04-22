@@ -3,9 +3,12 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+
+import { Movement } from '../movements/movement.entity';
 
 @ObjectType()
 @Entity('movement_types')
@@ -33,4 +36,8 @@ export class MovementType {
   @Field()
   @UpdateDateColumn()
   updatedAt: Date;
+
+  // relations
+  @OneToMany(() => Movement, (movement) => movement.movementType)
+  movements: Movement[];
 }

@@ -99,4 +99,10 @@ export class MovementTypesService {
 
     return saved;
   }
+
+  public async getByIds(ids: number[]): Promise<MovementType[]> {
+    return this.repository.findByIds(ids, {
+      loadRelationIds: true,
+    });
+  }
 }

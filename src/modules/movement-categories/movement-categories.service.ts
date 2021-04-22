@@ -102,4 +102,10 @@ export class MovementCategoriesService {
 
     return saved;
   }
+
+  public async getByIds(ids: number[]): Promise<MovementCategory[]> {
+    return this.repository.findByIds(ids, {
+      loadRelationIds: true,
+    });
+  }
 }

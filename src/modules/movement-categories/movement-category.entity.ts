@@ -1,12 +1,15 @@
-import { Field } from '@nestjs/graphql';
+import { Field, ObjectType } from '@nestjs/graphql';
 import {
   Column,
   CreateDateColumn,
   Entity,
+  ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 
+import { Movement } from '../movements/movement.entity';
+@ObjectType()
 @Entity('movement_categories')
 export class MovementCategory {
   @Field()
@@ -36,4 +39,9 @@ export class MovementCategory {
   @Field()
   @UpdateDateColumn()
   updatedAt: Date;
+
+  // relations
+
+  @ManyToOne(() => Movement, (movement) => movement.movementCategory)
+  movements: Movement[];
 }

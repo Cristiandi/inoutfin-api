@@ -11,7 +11,7 @@ const rows = [
   {
     name: 'Outcome',
     code: '02O',
-    sign: 1,
+    sign: -1,
   },
 ];
 

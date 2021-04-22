@@ -221,4 +221,10 @@ export class UsersService {
 
     return 'ok';
   }
+
+  public async getByIds(ids: number[]): Promise<User[]> {
+    return this.repository.findByIds(ids, {
+      loadRelationIds: true,
+    });
+  }
 }

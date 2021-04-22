@@ -2,6 +2,41 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+type MovementCategory {
+  id: Float!
+  name: String!
+  code: String!
+  description: String!
+  sign: Float!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type MovementType {
+  id: Float!
+  name: String!
+  code: String!
+  sign: Float!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type Movement {
+  id: Float!
+  description: String!
+  amount: Float!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  user: User!
+  movementType: MovementType!
+  movementCategory: MovementCategory!
+}
+
 type User {
   id: Float!
   authUid: String!
@@ -11,11 +46,6 @@ type User {
   createdAt: DateTime!
   updatedAt: DateTime!
 }
-
-"""
-A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
-"""
-scalar DateTime
 
 type Query {
   sayHello: String!
@@ -33,6 +63,8 @@ type Mutation {
   changeUserPassword(changeUserPasswordInput: ChangeUserPasswordInput!): User!
   changeUserPhone(changeUserPhoneInput: ChangeUserPhoneInput!): User!
   resetUserPassword(resetUserPasswordInput: ResetUserPasswordInput!): String!
+  createOutcomeMovement(createOutcomeMovementInput: CreateOutcomeMovementInput!): Movement!
+  createIncomeMovement(createIncomeMovementInput: CreateIncomeMovementInput!): Movement!
 }
 
 input CreateUserInput {
@@ -65,4 +97,18 @@ input ChangeUserPhoneInput {
 
 input ResetUserPasswordInput {
   email: String!
+}
+
+input CreateOutcomeMovementInput {
+  userAuthUid: String!
+  movementCategoryId: Int!
+  amount: Float!
+  description: String!
+}
+
+input CreateIncomeMovementInput {
+  userAuthUid: String!
+  movementCategoryId: Int!
+  amount: Float!
+  description: String!
 }
