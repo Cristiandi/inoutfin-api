@@ -1,8 +1,10 @@
-import { Injectable, PreconditionFailedException } from '@nestjs/common';
+import { Injectable, NotFoundException, PreconditionFailedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
 import { Movement } from './movement.entity';
+
+import { Balance } from './balance.model';
 
 import { UsersService } from '../users/users.service';
 
@@ -12,8 +14,8 @@ import { MovementCategoriesService } from '../movement-categories/movement-categ
 import { CreateOutcomeMovementInput } from './dto/create-outcome-movement-input.dto';
 import { CreateIncomeMovementInput } from './dto/create-income-movement-input.dto';
 import { GetBalanceResumeInput } from './dto/get-balance-resume-input.dto';
-import { Balance } from './balance.model';
 import { GetAllMovementsInput } from './dto/get-all-movements-input.dto';
+import { GetOneMovementInput } from './dto/get-one-movement-input.dto';
 
 @Injectable()
 export class MovementsService {
@@ -51,7 +53,6 @@ export class MovementsService {
     );
 
     if (movementCategory.sign > 0) {
-      // eslint-disable-next-line prettier/prettier
       throw new PreconditionFailedException(`can't use category ${movementCategory.name} for outcome.`);
     }
 
@@ -98,7 +99,6 @@ export class MovementsService {
     );
 
     if (movementCategory.sign < 0) {
-      // eslint-disable-next-line prettier/prettier
       throw new PreconditionFailedException(`can't use category ${movementCategory.name} for outcome.`);
     }
 
@@ -136,6 +136,30 @@ export class MovementsService {
       .getMany();
 
     return movements;
+  }
+
+  public async getOne(
+    getOneMovementInput: GetOneMovementInput
+  ): Promise<Movement> {
+    const { userAuthUid } = getOneMovementInput;
+
+    const user = await this.usersService.getByAuthuid({
+      authUid: userAuthUid
+    });
+
+    const { id } = getOneMovementInput;
+
+    const movement = await this.repository.createQueryBuilder('m')
+      .loadAllRelationIds()
+      .where('m.user_id = :userId', { userId: user.id })
+      .andWhere('m.id = :id', { id })
+      .getOne();
+
+    if (!movement) {
+      throw new NotFoundException(`can't get the movement ${id} for the user ${userAuthUid}.`);
+    }
+
+    return movement;
   }
 
   public async getBalanceResume(

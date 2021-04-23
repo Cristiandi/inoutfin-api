@@ -57,6 +57,7 @@ type Query {
   getAllMovementCategories(getAllMovementCategoriesInput: GetAllMovementCategoriesInput!): [MovementCategory!]!
   getBalanceResume(getBalanceResumeInput: GetBalanceResumeInput!): Balance!
   getAllMovements(getAllMovementsInput: GetAllMovementsInput!): [Movement!]!
+  getOneMovement(getOneMovementInput: GetOneMovementInput!): Movement!
 }
 
 input GetUserByAuthUidInput {
@@ -75,6 +76,11 @@ input GetAllMovementsInput {
   userAuthUid: String!
   limit: Int
   skip: Int
+}
+
+input GetOneMovementInput {
+  userAuthUid: String!
+  id: Int!
 }
 
 type Mutation {

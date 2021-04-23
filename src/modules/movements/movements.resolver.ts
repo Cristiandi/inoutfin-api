@@ -21,6 +21,7 @@ import { CreateOutcomeMovementInput } from './dto/create-outcome-movement-input.
 import { CreateIncomeMovementInput } from './dto/create-income-movement-input.dto';
 import { GetBalanceResumeInput } from './dto/get-balance-resume-input.dto';
 import { GetAllMovementsInput } from './dto/get-all-movements-input.dto';
+import { GetOneMovementInput } from './dto/get-one-movement-input.dto';
 @Resolver(() => Movement)
 export class MovementsResolver {
   constructor(
@@ -56,6 +57,13 @@ export class MovementsResolver {
     @Args('getAllMovementsInput') getAllMovementsInput: GetAllMovementsInput,
   ): Promise<Movement[]> {
     return this.service.getAll(getAllMovementsInput);
+  }
+
+  @Query(() => Movement)
+  getOneMovement(
+    @Args('getOneMovementInput') getOneMovementInput: GetOneMovementInput, 
+  ): Promise<Movement> {
+    return this.service.getOne(getOneMovementInput);
   }
 
   @ResolveField(() => User, { name: 'user' })
