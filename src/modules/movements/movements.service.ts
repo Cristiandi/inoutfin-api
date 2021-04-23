@@ -13,6 +13,7 @@ import { CreateOutcomeMovementInput } from './dto/create-outcome-movement-input.
 import { CreateIncomeMovementInput } from './dto/create-income-movement-input.dto';
 import { GetBalanceResumeInput } from './dto/get-balance-resume-input.dto';
 import { Balance } from './balance.model';
+import { GetAllMovementsInput } from './dto/get-all-movements-input.dto';
 
 @Injectable()
 export class MovementsService {
@@ -116,6 +117,27 @@ export class MovementsService {
     return saved;
   }
 
+  public async getAll(
+    getAllMovementsInput: GetAllMovementsInput,
+  ): Promise<Movement[]> {
+    const { userAuthUid, limit = 0, skip } = getAllMovementsInput;
+
+    const user = await this.usersService.getByAuthuid({
+      authUid: userAuthUid,
+    });
+
+    const movements = await this.repository
+      .createQueryBuilder('m')
+      .loadAllRelationIds()
+      .where('m.user_id = :userId', { userId: user.id })
+      .limit(limit || undefined)
+      .skip(skip || 0)
+      .orderBy('m.id', 'DESC')
+      .getMany();
+
+    return movements;
+  }
+
   public async getBalanceResume(
     getBalanceResumeInput: GetBalanceResumeInput,
   ): Promise<Balance> {
@@ -131,12 +153,10 @@ export class MovementsService {
       .where('m.user_id = :userId', { userId: user.id })
       .execute();
 
-    const { total } = result[0];
-
-    console.log(parseFloat(total));
+    const { total = 0 } = result[0];
 
     return {
-      amount: parseFloat(total),
+      amount: parseFloat(total || 0),
     };
   }
 }
