@@ -186,10 +186,22 @@ export class MovementsService {
       });
     }
 
+    // TODO use a parameter instead
+    const movementType = await this.movementTypesService.getByOneField({
+      field: 'code',
+      value: '01I',
+      checkExisting: true,
+    });
+
+    const amount = updateIncomeMovementInput.amount || existing.amount;
+    const signedAmount = amount * movementType.sign;
+
     const preloaded = await this.repository.preload({
       id: existing.id,
       ...updateIncomeMovementInput,
       closed,
+      amount,
+      signedAmount,
       movementCategory
     });
 
@@ -223,10 +235,22 @@ export class MovementsService {
       });
     }
 
+    // TODO: use a parameter instead
+    const movementType = await this.movementTypesService.getByOneField({
+      field: 'code',
+      value: '02O',
+      checkExisting: true,
+    });
+
+    const amount = updateOutcomeMovementInput.amount || existing.amount;
+    const signedAmount = amount * movementType.sign;
+
     const preloaded = await this.repository.preload({
       id: existing.id,
       ...updateOutcomeMovementInput,
       closed,
+      amount,
+      signedAmount,
       movementCategory
     });
 
