@@ -30,6 +30,7 @@ type Movement {
   id: Float!
   description: String!
   amount: Float!
+  signedAmount: Float!
   closed: Boolean!
   createdAt: DateTime!
   updatedAt: DateTime!

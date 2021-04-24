@@ -64,11 +64,10 @@ export class MovementsService {
       user,
       movementType,
       movementCategory,
-      amount: amount * movementType.sign,
+      amount: amount,
+      signedAmount: amount * movementType.sign,
       description,
     });
-
-    console.log('amount', amount * movementType.sign);
 
     const saved = await this.repository.save(created);
 
@@ -110,7 +109,8 @@ export class MovementsService {
       user,
       movementType,
       movementCategory,
-      amount: amount * movementType.sign,
+      amount: amount,
+      signedAmount: amount * movementType.sign,
       description,
     });
 
@@ -249,7 +249,7 @@ export class MovementsService {
 
     const result = await this.repository
       .createQueryBuilder('m')
-      .select(['sum(m.amount) as total'])
+      .select(['sum(m.signed_amount) as total'])
       .where('m.user_id = :userId', { userId: user.id })
       .execute();
 

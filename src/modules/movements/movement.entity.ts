@@ -29,6 +29,10 @@ export class Movement {
   amount: number;
 
   @Field()
+  @Column({ name: 'signed_amount', type: 'decimal', precision: 12, scale: 2, nullable: true })
+  signedAmount: number;
+
+  @Field()
   @Column({ type: 'boolean', default: false })
   closed: boolean;
 
