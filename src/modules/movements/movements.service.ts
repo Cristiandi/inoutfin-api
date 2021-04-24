@@ -131,7 +131,8 @@ export class MovementsService {
     const movements = await this.repository
       .createQueryBuilder('m')
       .loadAllRelationIds()
-      .where('m.user_id = :userId', { userId: user.id })
+      .where('m.deleted_at is null')
+      .andWhere('m.user_id = :userId', { userId: user.id })
       .limit(limit || undefined)
       .skip(skip || 0)
       .orderBy('m.id', 'DESC')
@@ -153,7 +154,8 @@ export class MovementsService {
 
     const existing = await this.repository.createQueryBuilder('m')
       .loadAllRelationIds()
-      .where('m.user_id = :userId', { userId: user.id })
+      .where('m.deleted_at is null')
+      .andWhere('m.user_id = :userId', { userId: user.id })
       .andWhere('m.id = :id', { id })
       .getOne();
 
@@ -262,6 +264,20 @@ export class MovementsService {
     };
   }
 
+  public async remove(
+    getOneMovementInput: GetOneMovementInput
+  ): Promise<Movement> {
+    const existing = await this.getOne(getOneMovementInput);
+
+    const clone = {
+      ...existing
+    };
+
+    await this.repository.softRemove(existing);
+
+    return clone;
+  }
+
   public async getBalanceResume(
     getBalanceResumeInput: GetBalanceResumeInput,
   ): Promise<Balance> {
@@ -274,7 +290,8 @@ export class MovementsService {
     const result = await this.repository
       .createQueryBuilder('m')
       .select(['sum(m.signed_amount) as total'])
-      .where('m.user_id = :userId', { userId: user.id })
+      .where('m.deleted_at is null')
+      .andWhere('m.user_id = :userId', { userId: user.id })
       .execute();
 
     const { total = 0 } = result[0];

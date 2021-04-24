@@ -84,6 +84,13 @@ export class MovementsResolver {
     return this.service.updateOutcome(getOneMovementInput, updateOutcomeMovementInput);
   }
 
+  @Mutation(() => Movement)
+  removeMovement(
+    @Args('getOneMovementInput') getOneMovementInput: GetOneMovementInput,
+  ): Promise<Movement> {
+    return this.service.remove(getOneMovementInput);
+  }
+
   @ResolveField(() => User, { name: 'user' })
   user(@Parent() movement: Movement): Promise<User> {
     const value: any = movement.user;

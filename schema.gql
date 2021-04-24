@@ -96,6 +96,7 @@ type Mutation {
   createIncomeMovement(createIncomeMovementInput: CreateIncomeMovementInput!): Movement!
   updateIncomeMovement(updateIncomeMovementInput: UpdateIncomeMovementInput!, getOneMovementInput: GetOneMovementInput!): Movement!
   updateOutcomeMovement(updateOutcomeMovementInput: UpdateOutcomeMovementInput!, getOneMovementInput: GetOneMovementInput!): Movement!
+  removeMovement(getOneMovementInput: GetOneMovementInput!): Movement!
 }
 
 input CreateUserInput {
