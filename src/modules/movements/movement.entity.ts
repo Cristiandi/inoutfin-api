@@ -38,6 +38,14 @@ export class Movement {
   closed: boolean;
 
   @Field()
+  @Column({ name: 'cloud_id', type: 'varchar', length: 50, nullable: true })
+  cloudId: string;
+
+  @Field()
+  @Column({ name: 'image_url', type: 'varchar', length: 200, nullable: true })
+  imageUrl: string;
+
+  @Field()
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 

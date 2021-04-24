@@ -43,7 +43,6 @@ export class UsersService {
     });
 
     if (existingByPhone) {
-      // eslint-disable-next-line prettier/prettier
       throw new PreconditionFailedException(`already exist an user with the phone ${phone}.`);
     }
 
@@ -54,7 +53,6 @@ export class UsersService {
     });
 
     if (existingByEmail) {
-      // eslint-disable-next-line prettier/prettier
       throw new PreconditionFailedException(`already exist an user with the email ${email}.`);
     }
 
@@ -189,7 +187,6 @@ export class UsersService {
     const existing = await this.repository.findOne({ [field]: value });
 
     if (!existing && checkExisting) {
-      // eslint-disable-next-line prettier/prettier
       throw new NotFoundException(`can't get the user with the ${field} ${value}.`);
     }
 

@@ -24,6 +24,7 @@ import { GetAllMovementsInput } from './dto/get-all-movements-input.dto';
 import { GetOneMovementInput } from './dto/get-one-movement-input.dto';
 import { UpdateIncomeMovementInput } from './dto/update-income-movement-input.dto';
 import { UpdateOutcomeMovementInput } from './dto/update-outcome-movement-input.dto';
+import { GraphQLUpload } from 'apollo-server-express';
 @Resolver(() => Movement)
 export class MovementsResolver {
   constructor(
@@ -89,6 +90,14 @@ export class MovementsResolver {
     @Args('getOneMovementInput') getOneMovementInput: GetOneMovementInput,
   ): Promise<Movement> {
     return this.service.remove(getOneMovementInput);
+  }
+
+  @Mutation(() => Movement)
+  uploadMovementImage(
+    @Args('getOneMovementInput') getOneMovementInput: GetOneMovementInput,
+    @Args({ name: 'file', type: () => GraphQLUpload }) fileUpload: any
+  ): Promise<Movement> {
+    return this.service.uploadImage(getOneMovementInput, fileUpload);
   }
 
   @ResolveField(() => User, { name: 'user' })

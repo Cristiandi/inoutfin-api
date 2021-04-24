@@ -6,6 +6,7 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
+    "preinstall": "npx npm-force-resolutions",
     "prebuild": "rimraf dist",
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
@@ -30,6 +31,7 @@
     "apollo-server-express": "2.23.0",
     "class-transformer": "0.4.0",
     "class-validator": "0.13.1",
+    "cloudinary": "^1.25.1",
     "dataloader": "2.0.0",
     "graphql": "15.5.0",
     "graphql-tools": "7.0.4",
@@ -40,6 +42,10 @@
     "rimraf": "3.0.2",
     "rxjs": "6.6.7",
     "typeorm": "0.2.32"
+  },
+  "resolutions": {
+    "fs-capacitor": "^6.2.0",
+    "graphql-upload": "^11.0.0"
   },
   "devDependencies": {
     "@nestjs/cli": "7.6.0",

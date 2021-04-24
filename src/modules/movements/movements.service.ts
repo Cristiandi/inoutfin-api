@@ -1,6 +1,13 @@
-import { Injectable, NotFoundException, PreconditionFailedException } from '@nestjs/common';
+import * as fs from 'fs';
+import * as path from 'path';
+
+import { BadRequestException, Inject, Injectable, InternalServerErrorException, NotFoundException, PreconditionFailedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { v2 as cloudinary } from 'cloudinary';
+import { ConfigType } from '@nestjs/config';
+
+import appConfig from '../../config/app.config';
 
 import { Movement } from './movement.entity';
 
@@ -11,6 +18,8 @@ import { UsersService } from '../users/users.service';
 import { MovementTypesService } from '../movement-types/movement-types.service';
 import { MovementCategoriesService } from '../movement-categories/movement-categories.service';
 
+import { createFileFromReadStream } from '../../utils';
+
 import { CreateOutcomeMovementInput } from './dto/create-outcome-movement-input.dto';
 import { CreateIncomeMovementInput } from './dto/create-income-movement-input.dto';
 import { GetBalanceResumeInput } from './dto/get-balance-resume-input.dto';
@@ -18,16 +27,23 @@ import { GetAllMovementsInput } from './dto/get-all-movements-input.dto';
 import { GetOneMovementInput } from './dto/get-one-movement-input.dto';
 import { UpdateIncomeMovementInput } from './dto/update-income-movement-input.dto';
 import { UpdateOutcomeMovementInput } from './dto/update-outcome-movement-input.dto';
-
 @Injectable()
 export class MovementsService {
   constructor(
+    @Inject(appConfig.KEY)
+    private readonly appConfiguration: ConfigType<typeof appConfig>,
     @InjectRepository(Movement)
     private readonly repository: Repository<Movement>,
     private readonly usersService: UsersService,
     private readonly movementTypesService: MovementTypesService,
     private readonly movementCategoriesService: MovementCategoriesService,
-  ) {}
+  ) {
+    cloudinary.config({
+      cloud_name: this.appConfiguration.cloudinary.cloudName,
+      api_key: this.appConfiguration.cloudinary.apiKey,
+      api_secret: this.appConfiguration.cloudinary.apiSecret
+    });
+  }
 
   public async createOutcome(
     createOutcomeMovementInput: CreateOutcomeMovementInput,
@@ -276,6 +292,69 @@ export class MovementsService {
     await this.repository.softRemove(existing);
 
     return clone;
+  }
+
+  public async uploadImage(
+    getOneMovementInput: GetOneMovementInput,
+    fileUpload: any
+  ): Promise<Movement> {
+    const existing = await this.getOne(getOneMovementInput);
+
+    let filePath = '';
+
+    try {
+      const { filename, mimetype } = fileUpload;
+
+      if (!mimetype.startsWith('image')) {
+        throw new BadRequestException('mimetype not allowed.');
+      }
+
+      const basePath = path.resolve(__dirname);
+
+      const fileExt = filename.split('.').pop();
+
+      filePath = `${basePath}/${existing.id}.${fileExt}`;
+
+      const { createReadStream } = fileUpload;
+
+      const stream = createReadStream();
+
+      await createFileFromReadStream(stream, filePath);
+
+      let cloudinaryResponse;
+
+      try {
+        const folderName = this.appConfiguration.environment === 'production'
+          ? 'movements'
+          : `${this.appConfiguration.environment}_movements`;
+
+        cloudinaryResponse = await cloudinary.uploader.upload(filePath, {
+          folder: folderName,
+          public_id: '' + existing.id,
+          use_filename: true,
+          quality: 'auto:best'
+          
+        });
+
+        const { public_id: publicId, secure_url: secureUrl } = cloudinaryResponse;
+
+        const preloaded = await this.repository.preload({
+          id: existing.id,
+          cloudId: publicId,
+          imageUrl: secureUrl
+        });
+  
+        const saved = await this.repository.save(preloaded);
+  
+        return saved;
+      } catch (error) {
+        throw new InternalServerErrorException(error.message);
+      }
+    } finally {
+      if (filePath && fs.existsSync(filePath)) {
+        fs.unlinkSync(filePath);
+      }
+    }
   }
 
   public async getBalanceResume(

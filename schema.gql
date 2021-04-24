@@ -32,6 +32,8 @@ type Movement {
   amount: Float!
   signedAmount: Float!
   closed: Boolean!
+  cloudId: String!
+  imageUrl: String!
   createdAt: DateTime!
   updatedAt: DateTime!
   user: User!
@@ -97,6 +99,7 @@ type Mutation {
   updateIncomeMovement(updateIncomeMovementInput: UpdateIncomeMovementInput!, getOneMovementInput: GetOneMovementInput!): Movement!
   updateOutcomeMovement(updateOutcomeMovementInput: UpdateOutcomeMovementInput!, getOneMovementInput: GetOneMovementInput!): Movement!
   removeMovement(getOneMovementInput: GetOneMovementInput!): Movement!
+  uploadMovementImage(file: Upload!, getOneMovementInput: GetOneMovementInput!): Movement!
 }
 
 input CreateUserInput {
@@ -158,3 +161,6 @@ input UpdateOutcomeMovementInput {
   description: String
   closed: Boolean
 }
+
+"""The `Upload` scalar type represents a file upload."""
+scalar Upload
