@@ -29,6 +29,10 @@ export class Movement {
   amount: number;
 
   @Field()
+  @Column({ type: 'boolean', default: false })
+  closed: boolean;
+
+  @Field()
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 

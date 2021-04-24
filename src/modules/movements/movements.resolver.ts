@@ -22,6 +22,8 @@ import { CreateIncomeMovementInput } from './dto/create-income-movement-input.dt
 import { GetBalanceResumeInput } from './dto/get-balance-resume-input.dto';
 import { GetAllMovementsInput } from './dto/get-all-movements-input.dto';
 import { GetOneMovementInput } from './dto/get-one-movement-input.dto';
+import { UpdateIncomeMovementInput } from './dto/update-income-movement-input.dto';
+import { UpdateOutcomeMovementInput } from './dto/update-outcome-movement-input.dto';
 @Resolver(() => Movement)
 export class MovementsResolver {
   constructor(
@@ -64,6 +66,22 @@ export class MovementsResolver {
     @Args('getOneMovementInput') getOneMovementInput: GetOneMovementInput, 
   ): Promise<Movement> {
     return this.service.getOne(getOneMovementInput);
+  }
+
+  @Mutation(() => Movement)
+  updateIncomeMovement(
+    @Args('getOneMovementInput') getOneMovementInput: GetOneMovementInput,
+    @Args('updateIncomeMovementInput') updateIncomeMovementInput: UpdateIncomeMovementInput,
+  ): Promise<Movement> {
+    return this.service.updateIncome(getOneMovementInput, updateIncomeMovementInput);
+  }
+
+  @Mutation(() => Movement)
+  updateOutcomeMovement(
+    @Args('getOneMovementInput') getOneMovementInput: GetOneMovementInput,
+    @Args('updateOutcomeMovementInput') updateOutcomeMovementInput: UpdateOutcomeMovementInput,
+  ): Promise<Movement> {
+    return this.service.updateOutcome(getOneMovementInput, updateOutcomeMovementInput);
   }
 
   @ResolveField(() => User, { name: 'user' })

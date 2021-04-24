@@ -30,6 +30,7 @@ type Movement {
   id: Float!
   description: String!
   amount: Float!
+  closed: Boolean!
   createdAt: DateTime!
   updatedAt: DateTime!
   user: User!
@@ -92,6 +93,8 @@ type Mutation {
   resetUserPassword(resetUserPasswordInput: ResetUserPasswordInput!): String!
   createOutcomeMovement(createOutcomeMovementInput: CreateOutcomeMovementInput!): Movement!
   createIncomeMovement(createIncomeMovementInput: CreateIncomeMovementInput!): Movement!
+  updateIncomeMovement(updateIncomeMovementInput: UpdateIncomeMovementInput!, getOneMovementInput: GetOneMovementInput!): Movement!
+  updateOutcomeMovement(updateOutcomeMovementInput: UpdateOutcomeMovementInput!, getOneMovementInput: GetOneMovementInput!): Movement!
 }
 
 input CreateUserInput {
@@ -138,4 +141,18 @@ input CreateIncomeMovementInput {
   movementCategoryId: Int!
   amount: Float!
   description: String!
+}
+
+input UpdateIncomeMovementInput {
+  movementCategoryId: Int
+  amount: Float
+  description: String
+  closed: Boolean
+}
+
+input UpdateOutcomeMovementInput {
+  movementCategoryId: Int
+  amount: Float
+  description: String
+  closed: Boolean
 }

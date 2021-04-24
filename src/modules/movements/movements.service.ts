@@ -16,6 +16,8 @@ import { CreateIncomeMovementInput } from './dto/create-income-movement-input.dt
 import { GetBalanceResumeInput } from './dto/get-balance-resume-input.dto';
 import { GetAllMovementsInput } from './dto/get-all-movements-input.dto';
 import { GetOneMovementInput } from './dto/get-one-movement-input.dto';
+import { UpdateIncomeMovementInput } from './dto/update-income-movement-input.dto';
+import { UpdateOutcomeMovementInput } from './dto/update-outcome-movement-input.dto';
 
 @Injectable()
 export class MovementsService {
@@ -149,17 +151,91 @@ export class MovementsService {
 
     const { id } = getOneMovementInput;
 
-    const movement = await this.repository.createQueryBuilder('m')
+    const existing = await this.repository.createQueryBuilder('m')
       .loadAllRelationIds()
       .where('m.user_id = :userId', { userId: user.id })
       .andWhere('m.id = :id', { id })
       .getOne();
 
-    if (!movement) {
+    if (!existing) {
       throw new NotFoundException(`can't get the movement ${id} for the user ${userAuthUid}.`);
     }
 
-    return movement;
+    return existing;
+  }
+
+  public async updateIncome(
+    getOneMovementInput: GetOneMovementInput,
+    updateIncomeMovementInput: UpdateIncomeMovementInput
+  ): Promise<Movement> {
+    const existing = await this.getOne(getOneMovementInput);
+
+    const { closed = false } = updateIncomeMovementInput;
+
+    if (existing.closed) {
+      throw new PreconditionFailedException(`the movement ${getOneMovementInput.id} is already closed.`);
+    }
+
+    const { movementCategoryId } = updateIncomeMovementInput;
+
+    let movementCategory;
+
+    if (movementCategoryId) {
+      movementCategory = await this.movementCategoriesService.findOne({
+        id: movementCategoryId
+      });
+    }
+
+    const preloaded = await this.repository.preload({
+      id: existing.id,
+      ...updateIncomeMovementInput,
+      closed,
+      movementCategory
+    });
+
+    const saved = await this.repository.save(preloaded);
+
+    return {
+      ...existing,
+      ...saved
+    };
+  }
+
+  public async updateOutcome(
+    getOneMovementInput: GetOneMovementInput,
+    updateOutcomeMovementInput: UpdateOutcomeMovementInput
+  ): Promise<Movement> {
+    const existing = await this.getOne(getOneMovementInput);
+
+    const { closed = false } = updateOutcomeMovementInput;
+
+    if (existing.closed) {
+      throw new PreconditionFailedException(`the movement ${getOneMovementInput.id} is already closed.`);
+    }
+
+    const { movementCategoryId } = updateOutcomeMovementInput;
+
+    let movementCategory;
+
+    if (movementCategoryId) {
+      movementCategory = await this.movementCategoriesService.findOne({
+        id: movementCategoryId
+      });
+    }
+
+    const preloaded = await this.repository.preload({
+      id: existing.id,
+      ...updateOutcomeMovementInput,
+      closed,
+      movementCategory
+    });
+
+    const saved = await this.repository.save(preloaded);
+
+    return {
+      ...existing,
+      ...saved
+    };
   }
 
   public async getBalanceResume(
