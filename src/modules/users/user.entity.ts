@@ -27,9 +27,9 @@ export class User {
   @Column({ type: 'varchar', length: 160 })
   email: string;
 
-  @Field()
+  @Field(() => String, { nullable: true })
   @Column({ type: 'varchar', length: 10, nullable: true })
-  phone?: string;
+  phone: string;
 
   @Field()
   @CreateDateColumn({ name: 'created_at' })
