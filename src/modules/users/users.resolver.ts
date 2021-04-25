@@ -12,6 +12,7 @@ import { UpdateUserInput } from './dto/update-user-input.dto';
 import { ChangeUserEmailInput } from './dto/change-user-email-input.dto';
 import { ChangeUserPasswordInput } from './dto/change-user-password-input.dto';
 import { ChangeUserPhoneInput } from './dto/change-user-phone-input.dto';
+import { CreateUserFromAuthUidInput } from './dto/create.user-from-auth-uid.input.dto';
 
 @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
 @Resolver(() => User)
@@ -23,6 +24,13 @@ export class UsersResolver {
     @Args('createUserInput') createUserInput: CreateUserInput,
   ): Promise<User> {
     return this.service.create(createUserInput);
+  }
+
+  @Mutation(() => User, { name: 'createUserFromAuthUid' })
+  createUserFromAuthUid(
+    @Args('createUserFromAuthUidInput') createUserFromAuthUidInput: CreateUserFromAuthUidInput
+  ): Promise<User> {
+    return this.service.createFromAuthUid(createUserFromAuthUidInput);
   }
 
   @Mutation(() => User, { name: 'updateUser' })

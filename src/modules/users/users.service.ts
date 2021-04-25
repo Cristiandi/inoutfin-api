@@ -22,6 +22,7 @@ import { UpdateUserInput } from './dto/update-user-input.dto';
 import { ChangeUserEmailInput } from './dto/change-user-email-input.dto';
 import { ChangeUserPasswordInput } from './dto/change-user-password-input.dto';
 import { ChangeUserPhoneInput } from './dto/change-user-phone-input.dto';
+import { CreateUserFromAuthUidInput } from './dto/create.user-from-auth-uid.input.dto';
 
 @Injectable()
 export class UsersService {
@@ -62,6 +63,47 @@ export class UsersService {
       phone,
       roleCode: '02U', // TODO: use a parameter
       anonymous: false,
+    });
+
+    try {
+      const { authUid } = aclUser;
+
+      const created = this.repository.create({
+        email,
+        fullName,
+        phone,
+        authUid,
+      });
+
+      const saved = await this.repository.save(created);
+
+      return saved;
+    } catch (error) {
+      // TODO: delete the user in ACL
+      console.log('deleting the user in ACL');
+
+      throw error;
+    }
+  }
+
+  public async createFromAuthUid(
+    createUserFromAuthUidInput: CreateUserFromAuthUidInput
+  ): Promise<User> {
+    const { authUid, email, fullName = 'No assigned', phone } = createUserFromAuthUidInput;
+
+    const existing = await this.getByOneField({
+      field: 'authUid',
+      value: authUid,
+      checkExisting: false
+    });
+
+    if (existing) {
+      throw new PreconditionFailedException(`the user with authUid ${authUid} already exist.`);
+    }
+
+    const aclUser = await this.basicAclService.createUserAlreadyInFirebase({
+      authUid,
+      roleCode: '02U'// TODO: use a parameter
     });
 
     try {

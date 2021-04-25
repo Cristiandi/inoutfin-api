@@ -2,13 +2,14 @@ import { HttpException, HttpService, Inject, Injectable } from '@nestjs/common';
 import { ConfigType } from '@nestjs/config';
 
 import appConfig from '../../../config/app.config';
-import { ChangeEmailInput } from './dto/change-email-input.dto';
-import { ChangePasswordInput } from './dto/change-password-input.dto';
-import { ChangePhoneInput } from './dto/change-phone-input.dto';
 
 import { CreateUserInput } from './dto/create-user-input.dto';
 import { GetUserByAuthUidInput } from './dto/get-user-by-auth-uid-input.dto';
 import { SendForgottenPasswordEmailInput } from './dto/send-forgotten-password-email-input.dto';
+import { ChangeEmailInput } from './dto/change-email-input.dto';
+import { ChangePasswordInput } from './dto/change-password-input.dto';
+import { ChangePhoneInput } from './dto/change-phone-input.dto';
+import { CreateUserAlreadyInFirebaseInput } from './dto/create-user-already-in-firebase-input.dto';
 
 @Injectable()
 export class BasicAclService {
@@ -83,9 +84,48 @@ export class BasicAclService {
           anonymous,
         },
       });
+
       const { data } = response;
 
       return data;
+    } catch (error) {
+      throw new HttpException(
+        error.response.data.statusCode,
+        error.response.data.message,
+      );
+    }
+  }
+
+  public async createUserAlreadyInFirebase(
+    createUserAlreadyInFirebaseInput: CreateUserAlreadyInFirebaseInput
+  ) {
+    const { authUid, roleCode } = createUserAlreadyInFirebaseInput;
+
+    try {
+      const token = await this.getToken();
+
+      const {
+        acl: { baseUrl, companyUuid },
+      } = this.appConfiguration;
+
+      const response = await this.httpService.axiosRef({
+        url: `${baseUrl}users/already-in-firebase`,
+        method: 'post',
+        headers: {
+          'company-uuid': companyUuid,
+          Authorization: `Bearer ${token}`,
+        },
+        data: {
+          companyUuid,
+          authUid,
+          roleCode
+        },
+      });
+      
+      const { data } = response;
+
+      return data;
+
     } catch (error) {
       throw new HttpException(
         error.response.data.statusCode,

@@ -46,7 +46,7 @@ type User {
   authUid: String!
   fullName: String!
   email: String!
-  phone: String!
+  phone: String
   createdAt: DateTime!
   updatedAt: DateTime!
 }
@@ -89,6 +89,7 @@ input GetOneMovementInput {
 
 type Mutation {
   createUser(createUserInput: CreateUserInput!): User!
+  createUserFromAuthUid(createUserFromAuthUidInput: CreateUserFromAuthUidInput!): User!
   updateUser(updateUserInput: UpdateUserInput!): User!
   changeUserEmail(changeUserEmailInput: ChangeUserEmailInput!): User!
   changeUserPassword(changeUserPasswordInput: ChangeUserPasswordInput!): User!
@@ -107,6 +108,13 @@ input CreateUserInput {
   email: String!
   phone: String!
   password: String!
+}
+
+input CreateUserFromAuthUidInput {
+  authUid: String!
+  email: String!
+  fullName: String
+  phone: String
 }
 
 input UpdateUserInput {

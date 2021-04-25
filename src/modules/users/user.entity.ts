@@ -28,8 +28,8 @@ export class User {
   email: string;
 
   @Field()
-  @Column({ type: 'varchar', length: 10 })
-  phone: string;
+  @Column({ type: 'varchar', length: 10, nullable: true })
+  phone?: string;
 
   @Field()
   @CreateDateColumn({ name: 'created_at' })
