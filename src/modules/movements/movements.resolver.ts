@@ -6,13 +6,15 @@ import {
   Resolver,
   Query,
 } from '@nestjs/graphql';
+import { GraphQLUpload } from 'apollo-server-express';
 
 import { Movement } from './movement.entity';
 import { User } from '../users/user.entity';
 import { MovementType } from '../movement-types/movement-type.entity';
 import { MovementCategory } from '../movement-categories/movement-category.entity';
 
-import { Balance } from './balance.model';
+import { Balance } from './models/balance.model';
+import { IncomeOutcome } from './models/income-outcome.model';
 
 import { MovementsService } from './movements.service';
 import { MovementsLoaders } from './movements.loaders';
@@ -24,7 +26,7 @@ import { GetAllMovementsInput } from './dto/get-all-movements-input.dto';
 import { GetOneMovementInput } from './dto/get-one-movement-input.dto';
 import { UpdateIncomeMovementInput } from './dto/update-income-movement-input.dto';
 import { UpdateOutcomeMovementInput } from './dto/update-outcome-movement-input.dto';
-import { GraphQLUpload } from 'apollo-server-express';
+import { GetIncomeOutcomeByMonthInput } from './dto/get-income-outcome-by-month-input.dto';
 @Resolver(() => Movement)
 export class MovementsResolver {
   constructor(
@@ -46,13 +48,6 @@ export class MovementsResolver {
     createIncomeMovementInput: CreateIncomeMovementInput,
   ): Promise<Movement> {
     return this.service.createIncome(createIncomeMovementInput);
-  }
-
-  @Query(() => Balance, { name: 'getBalanceResume' })
-  getBalanceResume(
-    @Args('getBalanceResumeInput') getBalanceResumeInput: GetBalanceResumeInput,
-  ): Promise<Balance> {
-    return this.service.getBalanceResume(getBalanceResumeInput);
   }
 
   @Query(() => [Movement])
@@ -98,6 +93,20 @@ export class MovementsResolver {
     @Args({ name: 'file', type: () => GraphQLUpload }) fileUpload: any
   ): Promise<Movement> {
     return this.service.uploadImage(getOneMovementInput, fileUpload);
+  }
+
+  @Query(() => Balance, { name: 'getBalanceResume' })
+  getBalanceResume(
+    @Args('getBalanceResumeInput') getBalanceResumeInput: GetBalanceResumeInput,
+  ): Promise<Balance> {
+    return this.service.getBalanceResume(getBalanceResumeInput);
+  }
+
+  @Query(() => [IncomeOutcome], { name: 'getIncomeOutcomeByMonth' })
+  getIncomeOutcomeByMonth(
+    @Args('getIncomeOutcomeByMonthInput') getIncomeOutcomeByMonthInput: GetIncomeOutcomeByMonthInput,
+  ): Promise<IncomeOutcome[]> {
+    return this.service.getIncomeOutcomeByMonth(getIncomeOutcomeByMonthInput);
   }
 
   @ResolveField(() => User, { name: 'user' })

@@ -11,7 +11,8 @@ import appConfig from '../../config/app.config';
 
 import { Movement } from './movement.entity';
 
-import { Balance } from './balance.model';
+import { Balance } from './models/balance.model';
+import { IncomeOutcome } from './models/income-outcome.model';
 
 import { UsersService } from '../users/users.service';
 
@@ -27,6 +28,7 @@ import { GetAllMovementsInput } from './dto/get-all-movements-input.dto';
 import { GetOneMovementInput } from './dto/get-one-movement-input.dto';
 import { UpdateIncomeMovementInput } from './dto/update-income-movement-input.dto';
 import { UpdateOutcomeMovementInput } from './dto/update-outcome-movement-input.dto';
+import { GetIncomeOutcomeByMonthInput } from './dto/get-income-outcome-by-month-input.dto';
 @Injectable()
 export class MovementsService {
   constructor(
@@ -378,5 +380,47 @@ export class MovementsService {
     return {
       amount: parseFloat(total || 0),
     };
+  }
+
+  public async getIncomeOutcomeByMonth (
+    getIncomeOutcomeByMonthInput: GetIncomeOutcomeByMonthInput
+  ): Promise<IncomeOutcome[]> {
+    const { userAuthUid } = getIncomeOutcomeByMonthInput;
+
+    const user = await this.usersService.getByAuthuid({
+      authUid: userAuthUid
+    });
+
+    const query = 'select Y.month || \' \' || Y.year as "month", ' +
+    '(select coalesce(sum(amount), 0) ' +
+    'from movements ' +
+    'inner join movement_types on movement_types.id = movements.movement_type_id ' +
+    'where deleted_at is null ' +
+    'and to_char(created_at, \'YYYY\') = Y.year ' +
+    'and to_char(created_at, \'Mon\') = Y.month ' +
+    'and movement_types.sign = 1 ' +
+    'and movements.user_id = $1 ) as "income", ' +
+    '(select coalesce(sum(amount), 0) ' +
+    'from movements ' +
+    'inner join movement_types on movement_types.id = movements.movement_type_id ' +
+    'where deleted_at is null ' +
+    'and to_char(created_at, \'YYYY\') = Y.year ' +
+    'and to_char(created_at, \'Mon\') = Y.month ' +
+    'and movement_types.sign = -1 ' +
+    'and movements.user_id = $2 ) as "outcome" ' +
+    'from (  select to_char(current_date - interval \'1 month\' * X.mont_number, \'Mon\') as "month", ' +
+    'to_char(current_date - interval \'1 month\' * X.mont_number, \'YYYY\') as "year" ' +
+    'from (  select 0 as "mont_number" union ' +
+    'select 1 union ' +
+    'select 2 union ' +
+    'select 3 union ' +
+    'select 4 union ' +
+    'select 5 union ' +
+    'select 6 ' +
+    'order by 1 asc  ) as X  ) as Y';
+
+    const data = await this.repository.query(query, [user.id, user.id]);
+
+    return data;
   }
 }

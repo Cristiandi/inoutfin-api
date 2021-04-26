@@ -55,13 +55,20 @@ type Balance {
   amount: Float
 }
 
+type IncomeOutcome {
+  month: String
+  income: Float
+  outcome: Float
+}
+
 type Query {
   sayHello: String!
   getUserByAuthUid(getUserByAuthUidInput: GetUserByAuthUidInput!): User!
   getAllMovementCategories(getAllMovementCategoriesInput: GetAllMovementCategoriesInput!): [MovementCategory!]!
-  getBalanceResume(getBalanceResumeInput: GetBalanceResumeInput!): Balance!
   getAllMovements(getAllMovementsInput: GetAllMovementsInput!): [Movement!]!
   getOneMovement(getOneMovementInput: GetOneMovementInput!): Movement!
+  getBalanceResume(getBalanceResumeInput: GetBalanceResumeInput!): Balance!
+  getIncomeOutcomeByMonth(getIncomeOutcomeByMonthInput: GetIncomeOutcomeByMonthInput!): [IncomeOutcome!]!
 }
 
 input GetUserByAuthUidInput {
@@ -70,10 +77,6 @@ input GetUserByAuthUidInput {
 
 input GetAllMovementCategoriesInput {
   sign: Int!
-}
-
-input GetBalanceResumeInput {
-  userAuthUid: String!
 }
 
 input GetAllMovementsInput {
@@ -85,6 +88,14 @@ input GetAllMovementsInput {
 input GetOneMovementInput {
   userAuthUid: String!
   id: Int!
+}
+
+input GetBalanceResumeInput {
+  userAuthUid: String!
+}
+
+input GetIncomeOutcomeByMonthInput {
+  userAuthUid: String!
 }
 
 type Mutation {
