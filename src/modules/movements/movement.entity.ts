@@ -1,4 +1,4 @@
-import { Field, ObjectType } from '@nestjs/graphql';
+import { Field, ObjectType, Float } from '@nestjs/graphql';
 import {
   Column,
   CreateDateColumn,
@@ -29,7 +29,7 @@ export class Movement {
   @Column({ type: 'decimal', precision: 12, scale: 2 })
   amount: number;
 
-  @Field()
+  @Field(() => Float, { nullable: true })
   @Column({ name: 'signed_amount', type: 'decimal', precision: 12, scale: 2, nullable: true })
   signedAmount: number;
 
@@ -37,11 +37,11 @@ export class Movement {
   @Column({ type: 'boolean', default: false })
   closed: boolean;
 
-  @Field()
+  @Field(() => String, { nullable: true })
   @Column({ name: 'cloud_id', type: 'varchar', length: 50, nullable: true })
   cloudId: string;
 
-  @Field()
+  @Field(() => String, { nullable: true })
   @Column({ name: 'image_url', type: 'varchar', length: 200, nullable: true })
   imageUrl: string;
 
