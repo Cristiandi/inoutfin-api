@@ -13,6 +13,7 @@ import { Movement } from './movement.entity';
 
 import { Balance } from './models/balance.model';
 import { IncomeOutcome } from './models/income-outcome.model';
+import { OutcomePerCategory } from './models/outcome-per-category.model';
 
 import { UsersService } from '../users/users.service';
 
@@ -29,6 +30,7 @@ import { GetOneMovementInput } from './dto/get-one-movement-input.dto';
 import { UpdateIncomeMovementInput } from './dto/update-income-movement-input.dto';
 import { UpdateOutcomeMovementInput } from './dto/update-outcome-movement-input.dto';
 import { GetIncomeOutcomeByMonthInput } from './dto/get-income-outcome-by-month-input.dto';
+import { GetOutcomePerCategoriesInput } from './dto/get-outcome-per-categories-input.dto';
 @Injectable()
 export class MovementsService {
   constructor(
@@ -422,5 +424,53 @@ export class MovementsService {
     const data = await this.repository.query(query, [user.id, user.id]);
 
     return data;
+  }
+
+  public async getOutcomePerCategories (
+    getOutcomePerCategoriesInput: GetOutcomePerCategoriesInput
+  ): Promise<OutcomePerCategory[]> {
+    const { userAuthUid, starDate, endDate } = getOutcomePerCategoriesInput;
+
+    const user = await this.usersService.getByAuthuid({
+      authUid: userAuthUid
+    });
+
+    const totalOutcomeResult = await this.repository.createQueryBuilder('m')
+    .select([' coalesce(sum(m.amount), 0) as "totalOutcome"'])
+    .innerJoin('m.movementType', 'mt')
+    .where('mt.sign = -1')
+    .andWhere('m.user_id = :userId', { userId: user.id })
+    .andWhere('m.created_at between :starDate and :endDate', { starDate, endDate })
+    .execute();
+
+    let { totalOutcome } = totalOutcomeResult[0];
+
+    if (!totalOutcome) {
+      return [{
+        movementCategoryId: 1,
+        movementCategoryName: 'test',
+        percentage: 100
+      }];
+    }
+
+    totalOutcome = parseFloat(totalOutcome);
+
+    const outcomePerCategoriesResult = await this.repository.createQueryBuilder('m')
+    .select([
+      'mc.id as "movementCategoryId"',
+      'mc.name as "movementCategoryName"',
+      `sum(m.amount) / ${totalOutcome} * 100 as percentage`
+    ])
+    .innerJoin('m.movementType', 'mt')
+    .innerJoin('m.movementCategory', 'mc')
+    .where('mt.sign = -1')
+    .andWhere('m.user_id = :userId', { userId: user.id })
+    .andWhere('m.created_at between :starDate and :endDate', { starDate, endDate })
+    .groupBy('mc.id')
+    .execute();
+
+    const outcomePerCategories = outcomePerCategoriesResult.map(item => ({ ...item, percentage: Math.ceil(parseFloat(item.percentage) * 100) / 100 }));
+
+    return outcomePerCategories;
   }
 }

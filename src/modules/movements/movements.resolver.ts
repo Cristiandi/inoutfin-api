@@ -15,6 +15,7 @@ import { MovementCategory } from '../movement-categories/movement-category.entit
 
 import { Balance } from './models/balance.model';
 import { IncomeOutcome } from './models/income-outcome.model';
+import { OutcomePerCategory } from './models/outcome-per-category.model';
 
 import { MovementsService } from './movements.service';
 import { MovementsLoaders } from './movements.loaders';
@@ -27,6 +28,7 @@ import { GetOneMovementInput } from './dto/get-one-movement-input.dto';
 import { UpdateIncomeMovementInput } from './dto/update-income-movement-input.dto';
 import { UpdateOutcomeMovementInput } from './dto/update-outcome-movement-input.dto';
 import { GetIncomeOutcomeByMonthInput } from './dto/get-income-outcome-by-month-input.dto';
+import { GetOutcomePerCategoriesInput } from './dto/get-outcome-per-categories-input.dto';
 @Resolver(() => Movement)
 export class MovementsResolver {
   constructor(
@@ -107,6 +109,13 @@ export class MovementsResolver {
     @Args('getIncomeOutcomeByMonthInput') getIncomeOutcomeByMonthInput: GetIncomeOutcomeByMonthInput,
   ): Promise<IncomeOutcome[]> {
     return this.service.getIncomeOutcomeByMonth(getIncomeOutcomeByMonthInput);
+  }
+
+  @Query(() => [OutcomePerCategory], { name: 'getOutcomePerCategories' })
+  getOutcomePerCategories(
+    @Args('getOutcomePerCategoriesInput') getOutcomePerCategoriesInput: GetOutcomePerCategoriesInput,
+  ): Promise<OutcomePerCategory[]> {
+    return this.service.getOutcomePerCategories(getOutcomePerCategoriesInput);
   }
 
   @ResolveField(() => User, { name: 'user' })

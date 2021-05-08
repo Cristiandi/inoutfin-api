@@ -30,10 +30,10 @@ type Movement {
   id: Float!
   description: String!
   amount: Float!
-  signedAmount: Float!
+  signedAmount: Float
   closed: Boolean!
-  cloudId: String!
-  imageUrl: String!
+  cloudId: String
+  imageUrl: String
   createdAt: DateTime!
   updatedAt: DateTime!
   user: User!
@@ -61,6 +61,12 @@ type IncomeOutcome {
   outcome: Float
 }
 
+type OutcomePerCategory {
+  movementCategoryId: Int
+  movementCategoryName: String
+  percentage: Float
+}
+
 type Query {
   sayHello: String!
   getUserByAuthUid(getUserByAuthUidInput: GetUserByAuthUidInput!): User!
@@ -69,6 +75,7 @@ type Query {
   getOneMovement(getOneMovementInput: GetOneMovementInput!): Movement!
   getBalanceResume(getBalanceResumeInput: GetBalanceResumeInput!): Balance!
   getIncomeOutcomeByMonth(getIncomeOutcomeByMonthInput: GetIncomeOutcomeByMonthInput!): [IncomeOutcome!]!
+  getOutcomePerCategories(getOutcomePerCategoriesInput: GetOutcomePerCategoriesInput!): [OutcomePerCategory!]!
 }
 
 input GetUserByAuthUidInput {
@@ -96,6 +103,12 @@ input GetBalanceResumeInput {
 
 input GetIncomeOutcomeByMonthInput {
   userAuthUid: String!
+}
+
+input GetOutcomePerCategoriesInput {
+  userAuthUid: String!
+  starDate: String!
+  endDate: String!
 }
 
 type Mutation {
