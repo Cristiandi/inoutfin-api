@@ -34,7 +34,7 @@
     "cloudinary": "1.26.2",
     "dataloader": "2.0.0",
     "graphql": "15.5.1",
-    "graphql-tools": "7.0.5",
+    "graphql-tools": "8.0.0",
     "joi": "17.4.1",
     "nanoid": "3.1.23",
     "pg": "8.6.0",
