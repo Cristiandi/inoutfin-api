@@ -37,7 +37,7 @@
     "graphql-tools": "7.0.5",
     "joi": "17.4.1",
     "nanoid": "3.1.23",
-    "pg": "8.6.0",
+    "pg": "8.7.1",
     "reflect-metadata": "0.1.13",
     "rimraf": "3.0.2",
     "rxjs": "7.3.0",
