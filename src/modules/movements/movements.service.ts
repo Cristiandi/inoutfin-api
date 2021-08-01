@@ -155,7 +155,7 @@ export class MovementsService {
       .andWhere('m.user_id = :userId', { userId: user.id })
       .limit(limit || undefined)
       .skip(skip || 0)
-      .orderBy('m.id', 'DESC')
+      .orderBy('m.created_at', 'DESC')
       .getMany();
 
     return movements;
