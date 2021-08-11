@@ -10,6 +10,7 @@ type MovementCategory {
   sign: Float!
   createdAt: DateTime!
   updatedAt: DateTime!
+  movements: [Movement!]!
 }
 
 """

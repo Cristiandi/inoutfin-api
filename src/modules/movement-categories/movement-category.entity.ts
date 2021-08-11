@@ -3,7 +3,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
-  ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -42,6 +42,7 @@ export class MovementCategory {
 
   // relations
 
-  @ManyToOne(() => Movement, (movement) => movement.movementCategory)
+  @Field(() => [Movement])
+  @OneToMany(() => Movement, (movement) => movement.movementCategory)
   movements: Movement[];
 }
