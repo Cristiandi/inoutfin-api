@@ -1,6 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { ConfigType } from '@nestjs/config';
-import { HttpService } from '@nestjs/axios';
 import { GraphQLClient, gql } from 'graphql-request';
 
 import appConfig from '../../../config/app.config';
@@ -20,7 +19,6 @@ export class BasicAclService {
   constructor(
     @Inject(appConfig.KEY)
     private readonly appConfiguration: ConfigType<typeof appConfig>,
-    private readonly httpService: HttpService,
   ) {
     this.graphQLClient = this.initGraphQLClient();
   }
