@@ -60,7 +60,7 @@ export class UsersService {
     const aclUser = await this.basicAclService.createUser({
       email,
       password,
-      phone,
+      phone: `+57${phone}`,
       roleCode: '02U', // TODO: use a parameter
       sendEmail: true,
       emailTemplateParams: {
@@ -220,7 +220,7 @@ export class UsersService {
     // change the phone in the ACL
     await this.basicAclService.changePhone({
       authUid: existing.authUid,
-      phone,
+      phone: `+57${phone}`,
     });
 
     // change the phone here

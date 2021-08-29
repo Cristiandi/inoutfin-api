@@ -293,7 +293,6 @@ export class BasicAclService {
       mutation changeUserPhone (
           $authUid: String!
           $phone: String!
-          $emailTemplateParams: JSONObject
       ) {
           changeUserPhone (
               changeUserPhoneInput: {
