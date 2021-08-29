@@ -22,6 +22,8 @@ export default registerAs('config', () => ({
     email: process.env.BASIC_ACL_ADMIN_EMAIL,
     password: process.env.BASIC_ACL_ADMIN_PASSWORD,
     projectCode: process.env.BASIC_ACL_PROJECT_CODE,
+    accessKey: process.env.BASIC_ACL_ACCESS_KEY,
+    companyUid: process.env.BASIC_ACL_COMPANY_UID,
   },
   cloudinary: {
     cloudName: process.env.CLOUDINARY_CLOUD_NAME,

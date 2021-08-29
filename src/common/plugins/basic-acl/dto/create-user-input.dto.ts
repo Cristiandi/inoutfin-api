@@ -1,11 +1,15 @@
 export class CreateUserInput {
-  readonly email: string;
+  readonly authUid?: string;
 
-  readonly password: string;
+  readonly email?: string;
 
-  readonly phone: string;
+  readonly password?: string;
 
-  readonly roleCode: string;
+  readonly phone?: string;
 
-  readonly anonymous?: boolean;
+  readonly emailTemplateParams?: Record<string, string>;
+
+  readonly sendEmail?: boolean;
+
+  readonly roleCode?: string;
 }
