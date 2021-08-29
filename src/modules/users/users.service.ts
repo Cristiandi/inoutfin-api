@@ -62,7 +62,10 @@ export class UsersService {
       password,
       phone,
       roleCode: '02U', // TODO: use a parameter
-      anonymous: false,
+      sendEmail: true,
+      emailTemplateParams: {
+        fullName,
+      }
     });
 
     try {
@@ -101,9 +104,13 @@ export class UsersService {
       throw new PreconditionFailedException(`the user with authUid ${authUid} already exist.`);
     }
 
-    const aclUser = await this.basicAclService.createUserAlreadyInFirebase({
+    const aclUser = await this.basicAclService.createUser({
       authUid,
-      roleCode: '02U'// TODO: use a parameter
+      roleCode: '02U',// TODO: use a parameter
+      sendEmail: true,
+      emailTemplateParams: {
+        fullName,
+      }
     });
 
     try {
@@ -158,8 +165,11 @@ export class UsersService {
     const { email } = changeUserEmailInput;
 
     await this.basicAclService.changeEmail({
+      authUid: existing.authUid,
       email,
-      phone: existing.phone,
+      emailTemplateParams: {
+        fullName: existing.fullName,
+      }
     });
 
     const preloaded = await this.repository.preload({
@@ -184,9 +194,12 @@ export class UsersService {
     const { oldPassword, newPassword } = changeUserPasswordInput;
 
     await this.basicAclService.changePassword({
-      email: existing.email,
+      authUid: existing.authUid,
       oldPassword,
       newPassword,
+      emailTemplateParams: {
+        fullName: existing.fullName,
+      },
     });
 
     return existing;
@@ -206,7 +219,7 @@ export class UsersService {
 
     // change the phone in the ACL
     await this.basicAclService.changePhone({
-      email: existing.email,
+      authUid: existing.authUid,
       phone,
     });
 
@@ -254,8 +267,18 @@ export class UsersService {
   ): Promise<string> {
     const { email } = resetUserPasswordInput;
 
-    await this.basicAclService.sendForgottenPasswordEmail({
+    const existing = await this.getByOneField({
+      field: 'email',
+      value: email,
+      checkExisting: true,
+    });
+
+    await this.basicAclService.sendResetPasswordEmail({
       email,
+      emailTemplateParams: {
+        fullName: existing.fullName,
+      }
+
     });
 
     return 'ok';

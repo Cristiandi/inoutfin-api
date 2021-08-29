@@ -1,48 +1,42 @@
-import { HttpException, HttpService, Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { ConfigType } from '@nestjs/config';
+import { HttpService } from '@nestjs/axios';
+import { GraphQLClient, gql } from 'graphql-request';
 
 import appConfig from '../../../config/app.config';
 
 import { CreateUserInput } from './dto/create-user-input.dto';
-import { GetUserByAuthUidInput } from './dto/get-user-by-auth-uid-input.dto';
-import { SendForgottenPasswordEmailInput } from './dto/send-forgotten-password-email-input.dto';
+import { GetUserInput } from './dto/get-user-uid-input.dto';
+import { SendResetPasswordEmailInput } from './dto/send-reset-password-email-input.dto';
 import { ChangeEmailInput } from './dto/change-email-input.dto';
 import { ChangePasswordInput } from './dto/change-password-input.dto';
 import { ChangePhoneInput } from './dto/change-phone-input.dto';
-import { CreateUserAlreadyInFirebaseInput } from './dto/create-user-already-in-firebase-input.dto';
 
 @Injectable()
 export class BasicAclService {
+
+  private graphQLClient: GraphQLClient;
+
   constructor(
     @Inject(appConfig.KEY)
     private readonly appConfiguration: ConfigType<typeof appConfig>,
     private readonly httpService: HttpService,
-  ) {}
+  ) {
+    this.graphQLClient = this.initGraphQLClient();
+  }
 
-  /**
-   * function to get the admin token
-   *
-   * @return {*}  {Promise<string>}
-   * @memberof BasicAclService
-   */
-  public async getToken(): Promise<string> {
+  private initGraphQLClient() {
     const {
-      acl: { baseUrl, companyUuid, email, password },
+      acl: { baseUrl, accessKey },
     } = this.appConfiguration;
 
-    const response = await this.httpService.axiosRef({
-      url: `${baseUrl}users/login-admin`,
-      method: 'post',
-      data: {
-        companyUuid,
-        email,
-        password,
+    const graphQLClient = new GraphQLClient(baseUrl + 'graphql', {
+      headers: {
+        'access-key': accessKey,
       },
     });
 
-    const { data } = response;
-    const { accessToken } = data;
-    return accessToken;
+    return graphQLClient;
   }
 
   /**
@@ -52,86 +46,99 @@ export class BasicAclService {
    * @return {*}
    * @memberof BasicAclService
    */
-  public async createUser(createUserInput: CreateUserInput) {
-    const {
-      email,
-      password,
-      phone,
-      roleCode,
-      anonymous = false,
-    } = createUserInput;
+  public async createUser(input: CreateUserInput) {
+    const mutation = gql`
+        mutation createUser (
+            $companyUid: String!
+            $authUid: String
+            $email: String
+            $phone: String
+            $password: String
+            $roleCode: String
+            $sendEmail: Boolean
+            $emailTemplateParams: JSONObject
+        ) {
+            createUser (
+                createUserInput: {
+                    companyUid: $companyUid
+                    authUid: $authUid
+                    email: $email
+                    phone: $phone
+                    password: $password
+                    roleCode: $roleCode
+                    sendEmail: $sendEmail
+                    emailTemplateParams: $emailTemplateParams
+                }
+            ) {
+              id
+              authUid
+              email
+              phone
+              createdAt
+              updatedAt
+            }
+        }
+    `;
 
-    try {
-      const token = await this.getToken();
+      const { companyUid } = this.appConfiguration.acl;
+      const { authUid, email, password, phone, roleCode, sendEmail, emailTemplateParams  } = input;
 
-      const {
-        acl: { baseUrl, companyUuid },
-      } = this.appConfiguration;
+      const variables = {
+        companyUid,
+        authUid,
+        email,
+        phone,
+        password,
+        roleCode,
+        sendEmail,
+        emailTemplateParams,
+      };
 
-      const response = await this.httpService.axiosRef({
-        url: `${baseUrl}users`,
-        method: 'post',
-        headers: {
-          'company-uuid': companyUuid,
-          Authorization: `Bearer ${token}`,
-        },
-        data: {
-          companyUuid,
-          email,
-          password,
-          phone,
-          roleCode,
-          anonymous,
-        },
-      });
+      const data = await this.graphQLClient.request(mutation, variables);
 
-      const { data } = response;
+      const { createUser } = data;
 
-      return data;
-    } catch (error) {
-      throw new HttpException(
-        error.response.data.statusCode,
-        error.response.data.message,
-      );
-    }
+      return createUser;
   }
 
-  public async createUserAlreadyInFirebase(
-    createUserAlreadyInFirebaseInput: CreateUserAlreadyInFirebaseInput
-  ) {
-    const { authUid, roleCode } = createUserAlreadyInFirebaseInput;
+  /**
+   * function to get a user by his auth uid
+   *
+   * @param {GetUserInput} input
+   * @return {*}
+   * @memberof BasicAclService
+   */
+   async getUser(input: GetUserInput) {
+    const query = gql`
+      query getOneUser (
+          $authUid: String!
+      ) {
+          getOneUser (
+              getOneUserInput: {
+                  authUid: $authUid
+              }
+          ) {
+              id
+              authUid
+              email
+              phone
+              createdAt
+              updatedAt
+          }
+      }
+    `;
 
-    try {
-      const token = await this.getToken();
+    const { authUid } = input;
 
-      const {
-        acl: { baseUrl, companyUuid },
-      } = this.appConfiguration;
+    const variables = {
+      authUid,
+    };
 
-      const response = await this.httpService.axiosRef({
-        url: `${baseUrl}users/already-in-firebase`,
-        method: 'post',
-        headers: {
-          'company-uuid': companyUuid,
-          Authorization: `Bearer ${token}`,
-        },
-        data: {
-          companyUuid,
-          authUid,
-          roleCode
-        },
-      });
-      
-      const { data } = response;
+    const data = await this.graphQLClient.request(query, variables);
 
-      return data;
+    const { getOneUser } = data;
 
-    } catch (error) {
-      throw new HttpException(
-        error.response.data.statusCode,
-        error.response.data.message,
-      );
-    }
+    return getOneUser;
   }
 
   /**
@@ -141,112 +148,87 @@ export class BasicAclService {
    * @return {*}
    * @memberof BasicAclService
    */
-  async sendForgottenPasswordEmail(
-    sendForgottenPasswordEmailInput: SendForgottenPasswordEmailInput,
+  async sendResetPasswordEmail(
+    input: SendResetPasswordEmailInput,
   ) {
-    try {
-      const {
-        acl: { baseUrl, companyUuid },
-      } = this.appConfiguration;
+    const mutation = gql`
+      mutation sendResetPasswordEmail (
+          $companyUid: String!
+          $email: String!
+          $emailTemplateParams: JSONObject
+      ) {
+          sendResetUserPasswordEmail (
+              sendResetUserPasswordEmailInput: {
+                  companyUid: $companyUid
+                  email: $email
+                  emailTemplateParams: $emailTemplateParams
+              }
+          ) {
+              message
+          }
+      }
+    `;
 
-      const { email } = sendForgottenPasswordEmailInput;
+    const { companyUid } = this.appConfiguration.acl;
+    const { email, emailTemplateParams } = input;
 
-      const response = await this.httpService.axiosRef({
-        url: `${baseUrl}users/forgotten-password`,
-        method: 'post',
-        data: {
-          companyUuid,
-          email,
-        },
-      });
+    const variables = {
+      companyUid,
+      email,
+      emailTemplateParams,
+    };
 
-      const { data } = response;
+    const data = await this.graphQLClient.request(mutation, variables);
 
-      return data;
-    } catch (error) {
-      throw new HttpException(
-        error.response.data.statusCode,
-        error.response.data.message,
-      );
-    }
-  }
+    const { sendResetUserPasswordEmail } = data;
 
-  /**
-   * function to get a user by his auth uid
-   *
-   * @param {GetUserByAuthUidInput} getUserByAuthUidInpput
-   * @return {*}
-   * @memberof BasicAclService
-   */
-  async getUserByAuthUid(getUserByAuthUidInpput: GetUserByAuthUidInput) {
-    try {
-      const {
-        acl: { baseUrl, companyUuid },
-      } = this.appConfiguration;
-
-      const { authUid } = getUserByAuthUidInpput;
-
-      const token = await this.getToken();
-
-      const response = await this.httpService.axiosRef({
-        url: `${baseUrl}users/user/${authUid}`,
-        method: 'get',
-        headers: {
-          'company-uuid': companyUuid,
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      const { data } = response;
-
-      return data;
-    } catch (error) {
-      throw new HttpException(
-        error.response.data.statusCode,
-        error.response.data.message,
-      );
-    }
+    return sendResetUserPasswordEmail;
   }
 
   /**
    * function to change the email
    *
-   * @param {ChangeEmailInput} changeEmailInput
+   * @param {ChangeEmailInput} input
    * @return {*}
    * @memberof BasicAclService
    */
-  async changeEmail(changeEmailInput: ChangeEmailInput) {
-    try {
-      const {
-        acl: { baseUrl, companyUuid },
-      } = this.appConfiguration;
+  async changeEmail(input: ChangeEmailInput) {
+    const mutation = gql`
+      mutation changeUserEmail (
+          $authUid: String!
+          $email: String!
+          $emailTemplateParams: JSONObject
+      ) {
+          changeUserEmail (
+              changeUserEmailInput: {
+                  authUid: $authUid
+                  email: $email
+                  emailTemplateParams: $emailTemplateParams
+              }
+          ) {
+              id
+              authUid
+              email
+              phone
+              createdAt
+              updatedAt
+          }
+      }
+    `;
 
-      const { email, phone } = changeEmailInput;
+    const { authUid, email, emailTemplateParams } = input;
 
-      const token = await this.getToken();
+    const variables = {
+      authUid,
+      email,
+      emailTemplateParams,
+    };
 
-      const response = await this.httpService.axiosRef({
-        url: `${baseUrl}users/change-email`,
-        method: 'patch',
-        headers: {
-          'company-uuid': companyUuid,
-          Authorization: `Bearer ${token}`,
-        },
-        data: {
-          companyUuid,
-          email,
-          phone,
-        },
-      });
+    const data = await this.graphQLClient.request(mutation, variables);
 
-      const { data } = response;
+    const { changeUserEmail } = data;
 
-      return data;
-    } catch (error) {
-      throw new HttpException(
-        error.response.data.statusCode,
-        error.response.data.message,
-      );
-    }
+    return changeUserEmail;
   }
 
   /**
@@ -256,40 +238,47 @@ export class BasicAclService {
    * @return {*}
    * @memberof BasicAclService
    */
-  async changePassword(changePasswordInput: ChangePasswordInput) {
-    try {
-      const { email, oldPassword, newPassword } = changePasswordInput;
+  async changePassword(input: ChangePasswordInput) {
+    const mutation = gql`
+      mutation changeUserPassword (
+          $authUid: String!
+          $oldPassword: String!
+          $newPassword: String!
+          $emailTemplateParams: JSONObject
+      ) {
+          changeUserPassword (
+              changeUserPasswordInput: {
+                  authUid: $authUid
+                  oldPassword: $oldPassword
+                  newPassword: $newPassword
+                  emailTemplateParams: $emailTemplateParams
+              }
+          ) {
+              id
+              authUid
+              email
+              phone
+              company {
+                  id
+              }
+          }
+      }
+    `;
 
-      const token = await this.getToken();
+    const { authUid, oldPassword, newPassword, emailTemplateParams } = input;
 
-      const {
-        acl: { baseUrl, companyUuid },
-      } = this.appConfiguration;
+    const variables = {
+      authUid,
+      oldPassword,
+      newPassword,
+      emailTemplateParams
+    };
 
-      const response = await this.httpService.axiosRef({
-        url: `${baseUrl}users/change-password`,
-        method: 'patch',
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'company-uuid': companyUuid,
-        },
-        data: {
-          companyUuid,
-          email,
-          oldPassword,
-          newPassword,
-        },
-      });
+    const data = await this.graphQLClient.request(mutation, variables);
 
-      const { data } = response;
+    const { changeUserPassword } = data;
 
-      return data;
-    } catch (error) {
-      throw new HttpException(
-        error.response.data.statusCode,
-        error.response.data.message,
-      );
-    }
+    return changeUserPassword;
   }
 
   /**
@@ -299,38 +288,40 @@ export class BasicAclService {
    * @return {*}
    * @memberof BasicAclService
    */
-  public async changePhone(changePhoneInput: ChangePhoneInput) {
-    try {
-      const {
-        acl: { baseUrl, companyUuid },
-      } = this.appConfiguration;
+  public async changePhone(input: ChangePhoneInput) {
+    const mutation = gql`
+      mutation changeUserPhone (
+          $authUid: String!
+          $phone: String!
+          $emailTemplateParams: JSONObject
+      ) {
+          changeUserPhone (
+              changeUserPhoneInput: {
+                  authUid: $authUid
+                  phone: $phone
+              }
+          ) {
+              id
+              authUid
+              email
+              phone
+              createdAt
+              updatedAt
+          }
+      }
+    `;
 
-      const { email, phone } = changePhoneInput;
+    const { authUid, phone } = input;
 
-      const token = await this.getToken();
+    const variables = {
+      authUid,
+      phone,
+    };
 
-      const response = await this.httpService.axiosRef({
-        url: `${baseUrl}users/change-phone`,
-        method: 'patch',
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'company-uuid': companyUuid,
-        },
-        data: {
-          companyUuid,
-          email,
-          phone,
-        },
-      });
+    const data = await this.graphQLClient.request(mutation, variables);
 
-      const { data } = response;
+    const { changeUserPhone } = data;
 
-      return data;
-    } catch (error) {
-      throw new HttpException(
-        error.response.data.statusCode,
-        error.response.data.message,
-      );
-    }
+    return changeUserPhone;
   }
 }

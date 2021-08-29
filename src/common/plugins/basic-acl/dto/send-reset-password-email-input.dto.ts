@@ -1,6 +1,4 @@
-export class ChangeEmailInput {
-  readonly authUid: string;
-
+export class SendResetPasswordEmailInput {
   readonly email: string;
 
   readonly emailTemplateParams?: Record<string, string>;
