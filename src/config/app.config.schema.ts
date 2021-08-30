@@ -14,9 +14,8 @@ export default Joi.object({
 
   /* BASIC ACL */
   BASIC_ACL_BASE_URL: Joi.required(),
-  BASIC_ACL_COMPANY_UUID: Joi.required(),
-  BASIC_ACL_ADMIN_EMAIL: Joi.required(),
-  BASIC_ACL_ADMIN_PASSWORD: Joi.required(),
+  BASIC_ACL_COMPANY_UID: Joi.required(),
+  BASIC_ACL_ACCESS_KEY: Joi.required(),
   BASIC_ACL_PROJECT_CODE: Joi.required(),
 
   /* CLOUDINARY */

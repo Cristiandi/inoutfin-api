@@ -1,5 +1,5 @@
 export class ChangePhoneInput {
-  readonly email: string;
+  readonly authUid: string;
 
   readonly phone: string;
 }
