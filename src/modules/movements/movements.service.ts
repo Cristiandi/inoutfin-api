@@ -309,8 +309,6 @@ export class MovementsService {
     try {
       const { filename, mimetype } = fileUpload;
 
-      console.log('HI', filename, mimetype);
-
       if (!mimetype.startsWith('image')) {
         throw new BadRequestException('mimetype not allowed.');
       }
