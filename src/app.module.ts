@@ -1,9 +1,10 @@
 import * as path from 'path';
 
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { GraphQLModule } from '@nestjs/graphql';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { GraphQLUpload, graphqlUploadExpress } from 'graphql-upload';
 
 import appConfig from './config/app.config';
 import appConfigSchema from './config/app.config.schema';
@@ -35,6 +36,11 @@ const envPath = path.resolve(__dirname, `../.env.${NODE_ENV}`);
       playground: true,
       introspection: true,
       installSubscriptionHandlers: true,
+      formatError: (error) => {
+        console.error(error);
+        return error;
+      },
+      resolvers: { Upload: GraphQLUpload }, // NOTE : Adding this adjustment solved my issue
     }),
 
     TypeOrmModule.forRootAsync({
@@ -47,7 +53,7 @@ const envPath = path.resolve(__dirname, `../.env.${NODE_ENV}`);
         database: process.env.DATABASE_NAME,
         autoLoadEntities: true,
         synchronize: process.env.NODE_ENV !== 'production',
-        logging: true,
+        logging: false,
       }),
     }),
 
@@ -68,4 +74,8 @@ const envPath = path.resolve(__dirname, `../.env.${NODE_ENV}`);
   controllers: [AppController],
   providers: [AppService, AppResolver],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(graphqlUploadExpress()).forRoutes('graphql');
+  }
+}

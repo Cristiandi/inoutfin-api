@@ -6,7 +6,7 @@ import {
   Resolver,
   Query,
 } from '@nestjs/graphql';
-import { GraphQLUpload } from 'apollo-server-express';
+import { GraphQLUpload } from 'graphql-upload';
 
 import { Movement } from './movement.entity';
 import { User } from '../users/user.entity';
@@ -29,6 +29,7 @@ import { UpdateIncomeMovementInput } from './dto/update-income-movement-input.dt
 import { UpdateOutcomeMovementInput } from './dto/update-outcome-movement-input.dto';
 import { GetIncomeOutcomeByMonthInput } from './dto/get-income-outcome-by-month-input.dto';
 import { GetOutcomePerCategoriesInput } from './dto/get-outcome-per-categories-input.dto';
+
 @Resolver(() => Movement)
 export class MovementsResolver {
   constructor(

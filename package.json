@@ -30,10 +30,10 @@
     "@nestjs/common": "8.0.6",
     "@nestjs/config": "1.0.1",
     "@nestjs/core": "8.0.6",
-    "@nestjs/graphql": "7.11.0",
+    "@nestjs/graphql": "9.0.2",
     "@nestjs/platform-express": "8.0.6",
     "@nestjs/typeorm": "8.0.2",
-    "apollo-server-express": "2.25.2",
+    "apollo-server-express": "3.3.0",
     "class-transformer": "0.4.0",
     "class-validator": "0.13.1",
     "cloudinary": "1.26.3",
@@ -41,6 +41,7 @@
     "graphql": "15.5.1",
     "graphql-request": "3.5.0",
     "graphql-tools": "8.1.0",
+    "graphql-upload": "12.0.0",
     "joi": "17.4.2",
     "nanoid": "3.1.25",
     "pg": "8.7.1",
@@ -48,10 +49,6 @@
     "rimraf": "3.0.2",
     "rxjs": "7.3.0",
     "typeorm": "0.2.37"
-  },
-  "resolutions": {
-    "fs-capacitor": "^6.2.0",
-    "graphql-upload": "^12.0.0"
   },
   "devDependencies": {
     "@nestjs/cli": "8.1.1",
