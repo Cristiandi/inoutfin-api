@@ -50,10 +50,6 @@
     "rxjs": "7.3.0",
     "typeorm": "0.2.37"
   },
-  "resolutions": {
-    "fs-capacitor": "^6.2.0",
-    "graphql-upload": "^12.0.0"
-  },
   "devDependencies": {
     "@nestjs/cli": "8.1.1",
     "@nestjs/schematics": "8.0.3",
