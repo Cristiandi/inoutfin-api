@@ -20,6 +20,8 @@ import { OutcomePerCategory } from './models/outcome-per-category.model';
 import { MovementsService } from './movements.service';
 import { MovementsLoaders } from './movements.loaders';
 
+import { AclSlug } from '../../common/decorators/acl-slug.decorator';
+
 import { CreateOutcomeMovementInput } from './dto/create-outcome-movement-input.dto';
 import { CreateIncomeMovementInput } from './dto/create-income-movement-input.dto';
 import { GetBalanceResumeInput } from './dto/get-balance-resume-input.dto';
@@ -37,6 +39,7 @@ export class MovementsResolver {
     private readonly loaders: MovementsLoaders,
   ) {}
 
+  @AclSlug('movements:handle')
   @Mutation(() => Movement, { name: 'createOutcomeMovement' })
   createOutcomeMovement(
     @Args('createOutcomeMovementInput')
@@ -45,6 +48,7 @@ export class MovementsResolver {
     return this.service.createOutcome(createOutcomeMovementInput);
   }
 
+  @AclSlug('movements:handle')
   @Mutation(() => Movement, { name: 'createIncomeMovement' })
   createIncomeMovement(
     @Args('createIncomeMovementInput')
@@ -53,6 +57,7 @@ export class MovementsResolver {
     return this.service.createIncome(createIncomeMovementInput);
   }
 
+  @AclSlug('movements:read')
   @Query(() => [Movement])
   getAllMovements(
     @Args('getAllMovementsInput') getAllMovementsInput: GetAllMovementsInput,
@@ -60,6 +65,7 @@ export class MovementsResolver {
     return this.service.getAll(getAllMovementsInput);
   }
 
+  @AclSlug('movements:read')
   @Query(() => Movement)
   getOneMovement(
     @Args('getOneMovementInput') getOneMovementInput: GetOneMovementInput, 
@@ -67,6 +73,7 @@ export class MovementsResolver {
     return this.service.getOne(getOneMovementInput);
   }
 
+  @AclSlug('movements:handle')
   @Mutation(() => Movement)
   updateIncomeMovement(
     @Args('getOneMovementInput') getOneMovementInput: GetOneMovementInput,
@@ -75,6 +82,7 @@ export class MovementsResolver {
     return this.service.updateIncome(getOneMovementInput, updateIncomeMovementInput);
   }
 
+  @AclSlug('movements:handle')
   @Mutation(() => Movement)
   updateOutcomeMovement(
     @Args('getOneMovementInput') getOneMovementInput: GetOneMovementInput,
@@ -83,6 +91,7 @@ export class MovementsResolver {
     return this.service.updateOutcome(getOneMovementInput, updateOutcomeMovementInput);
   }
 
+  @AclSlug('movements:handle')
   @Mutation(() => Movement)
   removeMovement(
     @Args('getOneMovementInput') getOneMovementInput: GetOneMovementInput,
@@ -90,6 +99,7 @@ export class MovementsResolver {
     return this.service.remove(getOneMovementInput);
   }
 
+  @AclSlug('movements:handle')
   @Mutation(() => Movement)
   uploadMovementImage(
     @Args('getOneMovementInput') getOneMovementInput: GetOneMovementInput,
@@ -98,6 +108,7 @@ export class MovementsResolver {
     return this.service.uploadImage(getOneMovementInput, fileUpload);
   }
 
+  @AclSlug('movements:read')
   @Query(() => Balance, { name: 'getBalanceResume' })
   getBalanceResume(
     @Args('getBalanceResumeInput') getBalanceResumeInput: GetBalanceResumeInput,
@@ -105,6 +116,7 @@ export class MovementsResolver {
     return this.service.getBalanceResume(getBalanceResumeInput);
   }
 
+  @AclSlug('movements:read')
   @Query(() => [IncomeOutcome], { name: 'getIncomeOutcomeByMonth' })
   getIncomeOutcomeByMonth(
     @Args('getIncomeOutcomeByMonthInput') getIncomeOutcomeByMonthInput: GetIncomeOutcomeByMonthInput,
@@ -112,6 +124,7 @@ export class MovementsResolver {
     return this.service.getIncomeOutcomeByMonth(getIncomeOutcomeByMonthInput);
   }
 
+  @AclSlug('movements:read')
   @Query(() => [OutcomePerCategory], { name: 'getOutcomePerCategories' })
   getOutcomePerCategories(
     @Args('getOutcomePerCategoriesInput') getOutcomePerCategoriesInput: GetOutcomePerCategoriesInput,

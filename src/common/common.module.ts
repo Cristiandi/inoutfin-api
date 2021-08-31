@@ -1,10 +1,19 @@
-import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
+import { APP_GUARD } from '@nestjs/core';
+
+import appConfig from '../config/app.config';
+
+import { AuthorizationGuard } from './guards/authorization.guard';
 
 // import { LoggingMiddleware } from './middlewares/logging.middleware';
-
-@Module({})
-export class CommonModule implements NestModule {
-  configure(consumer: MiddlewareConsumer): void {
-    // consumer.apply(LoggingMiddleware).forRoutes('*');
-  }
-}
+@Module({
+  imports: [ConfigModule.forFeature(appConfig)],
+  providers: [
+    {
+      provide: APP_GUARD,
+      useClass: AuthorizationGuard,
+    },
+  ],
+})
+export class CommonModule {}

@@ -5,6 +5,9 @@ import { User } from './user.entity';
 
 import { UsersService } from './users.service';
 
+import { Public } from '../../common/decorators/public.decorator';
+import { AclSlug } from '../../common/decorators/acl-slug.decorator';
+
 import { CreateUserInput } from './dto/create-user-input';
 import { GetUserByAuthUidInput } from './dto/get-uset-by-auth-uid-input.dto';
 import { ResetUserPasswordInput } from './dto/reset-user-password-input.dto';
@@ -19,6 +22,7 @@ import { CreateUserFromAuthUidInput } from './dto/create.user-from-auth-uid.inpu
 export class UsersResolver {
   constructor(private readonly service: UsersService) {}
 
+  @Public()
   @Mutation(() => User, { name: 'createUser' })
   createUser(
     @Args('createUserInput') createUserInput: CreateUserInput,
@@ -26,6 +30,7 @@ export class UsersResolver {
     return this.service.create(createUserInput);
   }
 
+  @Public()
   @Mutation(() => User, { name: 'createUserFromAuthUid' })
   createUserFromAuthUid(
     @Args('createUserFromAuthUidInput') createUserFromAuthUidInput: CreateUserFromAuthUidInput
@@ -33,6 +38,7 @@ export class UsersResolver {
     return this.service.createFromAuthUid(createUserFromAuthUidInput);
   }
 
+  @AclSlug('users:handle')
   @Mutation(() => User, { name: 'updateUser' })
   updateUser(
     @Args('updateUserInput') updateUserInput: UpdateUserInput,
@@ -40,6 +46,7 @@ export class UsersResolver {
     return this.service.update(updateUserInput);
   }
 
+  @AclSlug('users:handle')
   @Mutation(() => User, { name: 'changeUserEmail' })
   changeUserEmail(
     @Args('changeUserEmailInput') changeUserEmailInput: ChangeUserEmailInput,
@@ -47,6 +54,7 @@ export class UsersResolver {
     return this.service.changeEmail(changeUserEmailInput);
   }
 
+  @AclSlug('users:handle')
   @Mutation(() => User, { name: 'changeUserPassword' })
   changeUserPassword(
     @Args('changeUserPasswordInput')
@@ -55,6 +63,7 @@ export class UsersResolver {
     return this.service.changePassword(changeUserPasswordInput);
   }
 
+  @AclSlug('users:handle')
   @Mutation(() => User, { name: 'changeUserPhone' })
   changeUserPhone(
     @Args('changeUserPhoneInput') changeUserPhoneInput: ChangeUserPhoneInput,
@@ -62,6 +71,7 @@ export class UsersResolver {
     return this.service.changePhone(changeUserPhoneInput);
   }
 
+  @AclSlug('users:read')
   @Query(() => User, { name: 'getUserByAuthUid' })
   getUserByAuthUid(
     @Args('getUserByAuthUidInput') getUserByAuthUidInput: GetUserByAuthUidInput,
@@ -69,6 +79,7 @@ export class UsersResolver {
     return this.service.getByAuthuid(getUserByAuthUidInput);
   }
 
+  @AclSlug('users:handle')
   @Mutation(() => String, { name: 'resetUserPassword' })
   resetUserPassword(
     @Args('resetUserPasswordInput')
