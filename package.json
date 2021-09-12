@@ -36,7 +36,7 @@
     "apollo-server-express": "3.3.0",
     "class-transformer": "0.4.0",
     "class-validator": "0.13.1",
-    "cloudinary": "1.26.3",
+    "cloudinary": "1.27.0",
     "dataloader": "2.0.0",
     "graphql": "15.5.2",
     "graphql-request": "3.5.0",
