@@ -38,7 +38,7 @@
     "class-validator": "0.13.1",
     "cloudinary": "1.27.0",
     "dataloader": "2.0.0",
-    "graphql": "15.5.3",
+    "graphql": "15.6.0",
     "graphql-request": "3.5.0",
     "graphql-tools": "8.2.0",
     "graphql-upload": "12.0.0",
