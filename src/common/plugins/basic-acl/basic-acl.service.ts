@@ -10,6 +10,7 @@ import { SendResetPasswordEmailInput } from './dto/send-reset-password-email-inp
 import { ChangeEmailInput } from './dto/change-email-input.dto';
 import { ChangePasswordInput } from './dto/change-password-input.dto';
 import { ChangePhoneInput } from './dto/change-phone-input.dto';
+import { CheckPermissionInput } from './dto/check-permission-input.dto';
 
 @Injectable()
 export class BasicAclService {
@@ -320,5 +321,46 @@ export class BasicAclService {
     const { changeUserPhone } = data;
 
     return changeUserPhone;
+  }
+
+  public async checkPermission(input: CheckPermissionInput) {
+    const query = gql`
+      query checkPermission (
+          $companyUid: String!
+          $permissionName: String!
+          $token: String
+          $apiKey: String
+      ) {
+          checkPermission (
+              checkPermissionInput: {
+                  companyUid: $companyUid
+                  permissionName: $permissionName
+                  token: $token
+                  apiKey: $apiKey
+              }
+          ) {
+              id
+              uid
+              name
+              allowed
+          }
+      }
+    `;
+
+    const { acl: { companyUid } } = this.appConfiguration;  
+    const { permissionName, token, apiKey } = input;
+
+    const variables = {
+      companyUid,
+      permissionName,
+      token,
+      apiKey,
+    };
+
+    const data = await this.graphQLClient.request(query, variables);
+
+    const { checkPermission } = data;
+
+    return checkPermission;
   }
 }

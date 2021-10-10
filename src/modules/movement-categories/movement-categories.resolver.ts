@@ -4,7 +4,7 @@ import { MovementCategoriesService } from './movement-categories.service';
 
 import { MovementCategory } from './movement-category.entity';
 
-import { AclSlug } from '../../common/decorators/acl-slug.decorator';
+import { PermissionName } from '../../common/decorators/permission-name.decorator';
 
 import { GetAllMovementCategoriesInput } from './dto/get-all-movement-categories-input.dto';
 
@@ -12,7 +12,7 @@ import { GetAllMovementCategoriesInput } from './dto/get-all-movement-categories
 export class MovementCategoriesResolver {
   constructor(private readonly service: MovementCategoriesService) {}
 
-  @AclSlug('movementCategories:read')
+  @PermissionName('movementCategories:read')
   @Query(() => [MovementCategory, { name: 'movementCategories' }])
   getAllMovementCategories(
     @Args('getAllMovementCategoriesInput')

@@ -6,7 +6,7 @@ import { User } from './user.entity';
 import { UsersService } from './users.service';
 
 import { Public } from '../../common/decorators/public.decorator';
-import { AclSlug } from '../../common/decorators/acl-slug.decorator';
+import { PermissionName } from '../../common/decorators/permission-name.decorator';
 
 import { CreateUserInput } from './dto/create-user-input';
 import { GetUserByAuthUidInput } from './dto/get-uset-by-auth-uid-input.dto';
@@ -38,7 +38,7 @@ export class UsersResolver {
     return this.service.createFromAuthUid(createUserFromAuthUidInput);
   }
 
-  @AclSlug('users:handle')
+  @PermissionName('users:handle')
   @Mutation(() => User, { name: 'updateUser' })
   updateUser(
     @Args('updateUserInput') updateUserInput: UpdateUserInput,
@@ -46,7 +46,7 @@ export class UsersResolver {
     return this.service.update(updateUserInput);
   }
 
-  @AclSlug('users:handle')
+  @PermissionName('users:handle')
   @Mutation(() => User, { name: 'changeUserEmail' })
   changeUserEmail(
     @Args('changeUserEmailInput') changeUserEmailInput: ChangeUserEmailInput,
@@ -54,7 +54,7 @@ export class UsersResolver {
     return this.service.changeEmail(changeUserEmailInput);
   }
 
-  @AclSlug('users:handle')
+  @PermissionName('users:handle')
   @Mutation(() => User, { name: 'changeUserPassword' })
   changeUserPassword(
     @Args('changeUserPasswordInput')
@@ -63,7 +63,7 @@ export class UsersResolver {
     return this.service.changePassword(changeUserPasswordInput);
   }
 
-  @AclSlug('users:handle')
+  @PermissionName('users:handle')
   @Mutation(() => User, { name: 'changeUserPhone' })
   changeUserPhone(
     @Args('changeUserPhoneInput') changeUserPhoneInput: ChangeUserPhoneInput,
@@ -71,7 +71,7 @@ export class UsersResolver {
     return this.service.changePhone(changeUserPhoneInput);
   }
 
-  @AclSlug('users:read')
+  @PermissionName('users:read')
   @Query(() => User, { name: 'getUserByAuthUid' })
   getUserByAuthUid(
     @Args('getUserByAuthUidInput') getUserByAuthUidInput: GetUserByAuthUidInput,
@@ -79,7 +79,7 @@ export class UsersResolver {
     return this.service.getByAuthuid(getUserByAuthUidInput);
   }
 
-  @AclSlug('users:handle')
+  @PermissionName('users:handle')
   @Mutation(() => String, { name: 'resetUserPassword' })
   resetUserPassword(
     @Args('resetUserPasswordInput')

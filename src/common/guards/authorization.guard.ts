@@ -15,7 +15,9 @@ import { GqlExecutionContext } from '@nestjs/graphql';
 import appConfig from '../../config/app.config';
 
 import { IS_PUBLIC_KEY } from '../decorators/public.decorator';
-import { ACL_SLUG_KEY } from '../decorators/acl-slug.decorator';
+import { PERMISSION_NAME_KEY } from '../decorators/permission-name.decorator';
+
+import { BasicAclService } from '../plugins/basic-acl/basic-acl.service';
 
 @Injectable()
 export class AuthorizationGuard implements CanActivate {
@@ -23,6 +25,7 @@ export class AuthorizationGuard implements CanActivate {
     private readonly reflector: Reflector,
     @Inject(appConfig.KEY)
     private readonly appConfiguration: ConfigType<typeof appConfig>,
+    private readonly basicAclService: BasicAclService
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -49,17 +52,23 @@ export class AuthorizationGuard implements CanActivate {
       throw new UnauthorizedException('token not found.');
     }
 
-    const aclSlug = this.reflector.get<string>(ACL_SLUG_KEY, context.getHandler());
+    const permissionName = this.reflector.get<string>(PERMISSION_NAME_KEY, context.getHandler());
 
-    if (!aclSlug) {
+    if (!permissionName) {
       throw new InternalServerErrorException('acl slug not found.');
     }
 
     try {
-      Logger.log(`token ${token}.`, AuthorizationGuard.name);
-      Logger.log(`slug ${aclSlug}.`, AuthorizationGuard.name);
+      await this.basicAclService.checkPermission({
+        token,
+        permissionName,
+      });
+
+      // Logger.log(`permission ${JSON.stringify(permission)}.`, AuthorizationGuard.name);
+
       return true;
     } catch (error) {
+      Logger.error(`permission check error ${error.message}.`, AuthorizationGuard.name);
       throw new UnauthorizedException(error.message);
     }
   }
