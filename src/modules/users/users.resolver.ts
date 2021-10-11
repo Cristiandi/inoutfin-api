@@ -79,7 +79,7 @@ export class UsersResolver {
     return this.service.getByAuthuid(getUserByAuthUidInput);
   }
 
-  @PermissionName('users:handle')
+  @Public()
   @Mutation(() => String, { name: 'resetUserPassword' })
   resetUserPassword(
     @Args('resetUserPasswordInput')
