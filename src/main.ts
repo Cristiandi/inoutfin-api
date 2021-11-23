@@ -15,9 +15,9 @@ async function bootstrap() {
   // app.useGlobalFilters(new CustomExceptionFilter());
 
   // getting the port env var
-  const PORT = configService.get<number>('config.app.port');
+  const PORT = configService.get<number>('config.app.port' as never);
 
-  const ENV = configService.get<string>('config.environment');
+  const ENV = configService.get<string>('config.environment' as never);
 
   await app.listen(PORT, () => {
     Logger.log(`app listening at ${PORT} in ${ENV}`, 'main.ts');
