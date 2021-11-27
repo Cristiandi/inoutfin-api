@@ -1,10 +1,9 @@
 import { Resolver, Query, Args } from '@nestjs/graphql';
+import { PermissionName } from 'nestjs-basic-acl-sdk';
 
 import { MovementCategoriesService } from './movement-categories.service';
 
 import { MovementCategory } from './movement-category.entity';
-
-import { PermissionName } from '../../common/decorators/permission-name.decorator';
 
 import { GetAllMovementCategoriesInput } from './dto/get-all-movement-categories-input.dto';
 

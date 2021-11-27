@@ -33,7 +33,6 @@ export class MovementCategoriesService {
     });
 
     if (existing) {
-      // eslint-disable-next-line prettier/prettier
       throw new PreconditionFailedException(`already exists a movement category with code ${code}.`);
     }
 
@@ -63,7 +62,6 @@ export class MovementCategoriesService {
     const existing = await this.repository.findOne({ [field]: value });
 
     if (!existing && checkExisting) {
-      // eslint-disable-next-line prettier/prettier
       throw new NotFoundException(`can't get the movement category with the ${field} ${value}.`);
     }
 

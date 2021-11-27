@@ -7,6 +7,7 @@ import {
   Query,
 } from '@nestjs/graphql';
 import { GraphQLUpload } from 'graphql-upload';
+import { PermissionName } from 'nestjs-basic-acl-sdk';
 
 import { Movement } from './movement.entity';
 import { User } from '../users/user.entity';
@@ -19,8 +20,6 @@ import { OutcomePerCategory } from './models/outcome-per-category.model';
 
 import { MovementsService } from './movements.service';
 import { MovementsLoaders } from './movements.loaders';
-
-import { PermissionName } from '../../common/decorators/permission-name.decorator';
 
 import { CreateOutcomeMovementInput } from './dto/create-outcome-movement-input.dto';
 import { CreateIncomeMovementInput } from './dto/create-income-movement-input.dto';

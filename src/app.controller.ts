@@ -1,8 +1,7 @@
 import { Controller, Get } from '@nestjs/common';
+import { Public } from 'nestjs-basic-acl-sdk';
 
 import { AppService } from './app.service';
-
-import { Public } from './common/decorators/public.decorator';
 
 @Controller()
 export class AppController {

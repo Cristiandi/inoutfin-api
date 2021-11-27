@@ -7,17 +7,15 @@ import {
   UnauthorizedException,
   InternalServerErrorException,
 } from '@nestjs/common';
-// import { Observable } from 'rxjs';
 import { Reflector } from '@nestjs/core';
 import { ConfigType } from '@nestjs/config';
 import { GqlExecutionContext } from '@nestjs/graphql';
+import { BasicAclService } from 'nestjs-basic-acl-sdk';
 
 import appConfig from '../../config/app.config';
 
-import { IS_PUBLIC_KEY } from '../decorators/public.decorator';
-import { PERMISSION_NAME_KEY } from '../decorators/permission-name.decorator';
-
-import { BasicAclService } from '../plugins/basic-acl/basic-acl.service';
+import { IS_PUBLIC_KEY } from 'nestjs-basic-acl-sdk';
+import { PERMISSION_NAME_KEY } from 'nestjs-basic-acl-sdk';
 
 @Injectable()
 export class AuthorizationGuard implements CanActivate {

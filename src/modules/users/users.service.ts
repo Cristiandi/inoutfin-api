@@ -7,12 +7,11 @@ import {
 import { ConfigType } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { BasicAclService } from 'nestjs-basic-acl-sdk';
 
 import appConfig from '../../config/app.config';
 
 import { User } from './user.entity';
-
-import { BasicAclService } from '../../common/plugins/basic-acl/basic-acl.service';
 
 import { CreateUserInput } from './dto/create-user-input';
 import { GetUserByOneFieldInput } from './dto/get-user-by-one-field-input.dto';
@@ -82,8 +81,11 @@ export class UsersService {
 
       return saved;
     } catch (error) {
-      // TODO: delete the user in ACL
       console.log('deleting the user in ACL');
+
+      await this.basicAclService.deleteUser({
+        authUid: aclUser.authUid,
+      });
 
       throw error;
     }
@@ -127,8 +129,9 @@ export class UsersService {
 
       return saved;
     } catch (error) {
-      // TODO: delete the user in ACL
-      console.log('deleting the user in ACL');
+      await this.basicAclService.deleteUser({
+        authUid: aclUser.authUid,
+      });
 
       throw error;
     }
