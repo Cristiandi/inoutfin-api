@@ -1,3 +1,4 @@
+// TODO: basic-acl-sdk
 import * as path from 'path';
 
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
@@ -13,7 +14,6 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AppResolver } from './app.resolver';
 import { UsersModule } from './modules/users/users.module';
-import { BasicAclModule } from './common/plugins/basic-acl/basic-acl.module';
 import { CommonModule } from './common/common.module';
 import { MovementTypesModule } from './modules/movement-types/movement-types.module';
 import { MovementCategoriesModule } from './modules/movement-categories/movement-categories.module';
@@ -57,8 +57,6 @@ const envPath = path.resolve(__dirname, `../.env.${NODE_ENV}`);
     }),
 
     UsersModule,
-
-    BasicAclModule,
 
     CommonModule,
 

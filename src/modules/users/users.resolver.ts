@@ -1,12 +1,10 @@
 import { Args, Mutation, Resolver, Query } from '@nestjs/graphql';
 import { UsePipes, ValidationPipe } from '@nestjs/common';
+import { PermissionName, Public } from 'nestjs-basic-acl-sdk';
 
 import { User } from './user.entity';
 
 import { UsersService } from './users.service';
-
-import { Public } from '../../common/decorators/public.decorator';
-import { PermissionName } from '../../common/decorators/permission-name.decorator';
 
 import { CreateUserInput } from './dto/create-user-input';
 import { GetUserByAuthUidInput } from './dto/get-uset-by-auth-uid-input.dto';

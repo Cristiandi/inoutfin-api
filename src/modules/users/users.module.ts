@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { BasicAclModule } from 'nestjs-basic-acl-sdk';
 
 import appConfig from '../../config/app.config';
 
@@ -9,13 +10,20 @@ import { UsersResolver } from './users.resolver';
 
 import { User } from './user.entity';
 
-import { BasicAclModule } from '../../common/plugins/basic-acl/basic-acl.module';
-
 @Module({
   imports: [
     ConfigModule.forFeature(appConfig),
+    BasicAclModule.registerAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => {
+        return {
+          companyUid: configService.get<string>('config.acl.companyUid'),
+          accessKey: configService.get<string>('config.acl.accessKey'),
+        };
+      }
+    }),
     TypeOrmModule.forFeature([User]),
-    BasicAclModule,
   ],
   providers: [UsersService, UsersResolver],
   exports: [UsersService],

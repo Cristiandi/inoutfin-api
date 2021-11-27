@@ -32,7 +32,6 @@ export class MovementTypesService {
     });
 
     if (existing) {
-      // eslint-disable-next-line prettier/prettier
       throw new PreconditionFailedException(`already exists a movement type with code ${code}.`);
     }
 
@@ -61,7 +60,6 @@ export class MovementTypesService {
     const existing = await this.repository.findOne({ [field]: value });
 
     if (!existing && checkExisting) {
-      // eslint-disable-next-line prettier/prettier
       throw new NotFoundException(`can't get the movement type with the ${field} ${value}.`);
     }
 
