@@ -13,7 +13,6 @@ export default Joi.object({
   DATABASE_NAME: Joi.required(),
 
   /* BASIC ACL */
-  BASIC_ACL_BASE_URL: Joi.required(),
   BASIC_ACL_COMPANY_UID: Joi.required(),
   BASIC_ACL_ACCESS_KEY: Joi.required(),
 
