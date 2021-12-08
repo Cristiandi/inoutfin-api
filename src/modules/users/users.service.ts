@@ -63,7 +63,7 @@ export class UsersService {
       roleCode: '02U', // TODO: use a parameter
       sendEmail: true,
       emailTemplateParams: {
-        fullName,
+        name: fullName,
       }
     });
 
