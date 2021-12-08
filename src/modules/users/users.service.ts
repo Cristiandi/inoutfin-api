@@ -63,7 +63,7 @@ export class UsersService {
       roleCode: '02U', // TODO: use a parameter
       sendEmail: true,
       emailTemplateParams: {
-        name: fullName,
+        fullName,
       }
     });
 
@@ -111,7 +111,7 @@ export class UsersService {
       roleCode: '02U',// TODO: use a parameter
       sendEmail: true,
       emailTemplateParams: {
-        name: fullName,
+        fullName,
       }
     });
 
