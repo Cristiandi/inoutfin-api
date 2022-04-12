@@ -6,6 +6,7 @@ import { ConfigModule } from '@nestjs/config';
 import { GraphQLModule } from '@nestjs/graphql';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { GraphQLUpload, graphqlUploadExpress } from 'graphql-upload';
+import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 
 import appConfig from './config/app.config';
 import appConfigSchema from './config/app.config.schema';
@@ -30,7 +31,7 @@ const envPath = path.resolve(__dirname, `../.env.${NODE_ENV}`);
       validationSchema: appConfigSchema,
     }),
 
-    GraphQLModule.forRoot({
+    GraphQLModule.forRoot<ApolloDriverConfig>({
       autoSchemaFile: 'schema.gql',
       playground: true,
       introspection: true,
@@ -40,6 +41,7 @@ const envPath = path.resolve(__dirname, `../.env.${NODE_ENV}`);
         return error;
       },
       resolvers: { Upload: GraphQLUpload }, // NOTE : Adding this adjustment solved my issue
+      driver: ApolloDriver,
     }),
 
     TypeOrmModule.forRootAsync({
