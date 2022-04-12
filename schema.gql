@@ -122,10 +122,10 @@ type Mutation {
   resetUserPassword(resetUserPasswordInput: ResetUserPasswordInput!): String!
   createOutcomeMovement(createOutcomeMovementInput: CreateOutcomeMovementInput!): Movement!
   createIncomeMovement(createIncomeMovementInput: CreateIncomeMovementInput!): Movement!
-  updateIncomeMovement(updateIncomeMovementInput: UpdateIncomeMovementInput!, getOneMovementInput: GetOneMovementInput!): Movement!
-  updateOutcomeMovement(updateOutcomeMovementInput: UpdateOutcomeMovementInput!, getOneMovementInput: GetOneMovementInput!): Movement!
+  updateIncomeMovement(getOneMovementInput: GetOneMovementInput!, updateIncomeMovementInput: UpdateIncomeMovementInput!): Movement!
+  updateOutcomeMovement(getOneMovementInput: GetOneMovementInput!, updateOutcomeMovementInput: UpdateOutcomeMovementInput!): Movement!
   removeMovement(getOneMovementInput: GetOneMovementInput!): Movement!
-  uploadMovementImage(file: Upload!, getOneMovementInput: GetOneMovementInput!): Movement!
+  uploadMovementImage(getOneMovementInput: GetOneMovementInput!, file: Upload!): Movement!
 }
 
 input CreateUserInput {
