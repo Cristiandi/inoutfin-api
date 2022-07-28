@@ -4,7 +4,7 @@ import {
   PreconditionFailedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 
 import { MovementType } from './movement-type.entity';
 
@@ -98,8 +98,11 @@ export class MovementTypesService {
     return saved;
   }
 
-  public async getByIds(ids: number[]): Promise<MovementType[]> {
-    return this.repository.findByIds(ids, {
+  public getByIds(ids: number[]): Promise<MovementType[]> {
+    return this.repository.find({
+      where: {
+        id: In(ids),
+      },
       loadRelationIds: true,
     });
   }
