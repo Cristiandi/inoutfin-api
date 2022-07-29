@@ -4,7 +4,7 @@ import {
   PreconditionFailedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 
 import { MovementCategory } from './movement-category.entity';
 
@@ -113,13 +113,16 @@ export class MovementCategoriesService {
       query.where('mc.sign = :sign', { sign });
     }
 
-    const items = query.getMany();
+    const items = await query.getMany();
 
     return items;
   }
 
-  public async getByIds(ids: number[]): Promise<MovementCategory[]> {
-    return this.repository.findByIds(ids, {
+  public getByIds(ids: number[]): Promise<MovementCategory[]> {
+    return this.repository.find({
+      where: {
+        id: In(ids),
+      },
       loadRelationIds: true,
     });
   }

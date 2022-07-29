@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { ConfigType } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { BasicAclService } from 'nestjs-basic-acl-sdk';
 
 import appConfig from '../../config/app.config';
@@ -287,8 +287,11 @@ export class UsersService {
     return 'ok';
   }
 
-  public async getByIds(ids: number[]): Promise<User[]> {
-    return this.repository.findByIds(ids, {
+  public getByIds(ids: number[]): Promise<User[]> {
+    return this.repository.find({
+      where: {
+        id: In(ids),
+      },
       loadRelationIds: true,
     });
   }
